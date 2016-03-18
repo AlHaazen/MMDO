@@ -29,11 +29,7 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="View" name="graphicsView">
-       <property name="renderHints">
-        <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
-       </property>
-      </widget>
+      <widget class="View" name="graphicsView"/>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -224,7 +220,14 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Simplex</string>
+              <string>Симлекс</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_6">
+             <property name="text">
+              <string>Двоїста задача</string>
              </property>
             </widget>
            </item>

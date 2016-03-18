@@ -66,6 +66,8 @@ private slots:
 
     bool checkPoint(QPointF point);
 
+    void on_pushButton_6_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;

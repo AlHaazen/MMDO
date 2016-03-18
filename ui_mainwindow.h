@@ -65,6 +65,7 @@ public:
     QPushButton *pushButton_2;
     QPushButton *pushButton_5;
     QPushButton *pushButton_3;
+    QPushButton *pushButton_6;
     QSpinBox *Equals;
     QPushButton *pushButton;
     QPushButton *pushButton_4;
@@ -105,7 +106,6 @@ public:
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
         graphicsView = new View(layoutWidget);
         graphicsView->setObjectName(QStringLiteral("graphicsView"));
-        graphicsView->setRenderHints(QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing);
 
         horizontalLayout->addWidget(graphicsView);
 
@@ -228,6 +228,11 @@ public:
 
         verticalLayout_2->addWidget(pushButton_3);
 
+        pushButton_6 = new QPushButton(layoutWidget);
+        pushButton_6->setObjectName(QStringLiteral("pushButton_6"));
+
+        verticalLayout_2->addWidget(pushButton_6);
+
         Equals = new QSpinBox(layoutWidget);
         Equals->setObjectName(QStringLiteral("Equals"));
         Equals->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -305,7 +310,8 @@ public:
         label_16->setText(QString());
         pushButton_2->setText(QApplication::translate("MainWindow", "Build", 0));
         pushButton_5->setText(QApplication::translate("MainWindow", "Calculate area", 0));
-        pushButton_3->setText(QApplication::translate("MainWindow", "Simplex", 0));
+        pushButton_3->setText(QApplication::translate("MainWindow", "\320\241\320\270\320\274\320\273\320\265\320\272\321\201", 0));
+        pushButton_6->setText(QApplication::translate("MainWindow", "\320\224\320\262\320\276\321\227\321\201\321\202\320\260 \320\267\320\260\320\264\320\260\321\207\320\260", 0));
         pushButton->setText(QApplication::translate("MainWindow", "Clear", 0));
         pushButton_4->setText(QApplication::translate("MainWindow", "Close", 0));
         menuImba_knopka->setTitle(QApplication::translate("MainWindow", "\320\224\320\276\320\262\321\226\320\264\320\272\320\260", 0));
