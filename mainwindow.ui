@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ММДО лабораторна №1</string>
+   <string>ММДО </string>
   </property>
   <property name="windowIcon">
    <iconset resource="icon.qrc">
@@ -212,7 +212,7 @@
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_3">
+            <widget class="QPushButton" name="Simplex">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
@@ -225,24 +225,55 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="pushButton_7">
+             <property name="text">
+              <string>Цілочислова</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="FractLinear">
+             <property name="text">
+              <string>Дробово-лінійна</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="pushButton_6">
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Двоїста задача</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="Equals">
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
-             </property>
-             <property name="maximum">
-              <number>10</number>
-             </property>
-             <property name="value">
-              <number>4</number>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QSpinBox" name="Equals">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+               <property name="value">
+                <number>4</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="Variables">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="value">
+                <number>2</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton">
@@ -286,7 +317,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuImba_knopka">

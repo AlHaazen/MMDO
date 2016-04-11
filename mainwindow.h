@@ -32,6 +32,9 @@ public:
         int a,b,c;
     }LINE;
 
+    LINE *getLines() const;
+    void setLines(LINE *value);
+
 private slots:
 
     void on_pushButton_2_clicked();
@@ -58,7 +61,7 @@ private slots:
 
     void on_actionClose_triggered();
     
-    void on_pushButton_3_clicked();
+//    void on_pushButton_3_clicked();
 
     void sort(QPointF *points, int n);
 
@@ -67,6 +70,16 @@ private slots:
     bool checkPoint(QPointF point);
 
     void on_pushButton_6_clicked();
+
+    void on_Variables_editingFinished();
+
+    void on_pushButton_7_clicked();
+
+    void on_FractLinear_clicked();
+
+    QString formOutput(vector<vector<double> > &matrix, vector<double> &multi, vector<double> &value, vector<double> &simplex);
+
+    void on_Simplex_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -78,7 +91,6 @@ private:
 
     QLineF qline[4];
     QLineF *qlines;
-    int r1, r2, r3, r4;
     double maxmin;
     double remX, remY;
     QPointF goodPoints[14];

@@ -2,6 +2,15 @@
 
 imbaLayout::imbaLayout(int i)
 {
+
+
+    colorBtn = new QPushButton();
+
+   connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
+
+   // colorBtn->connect(colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
+
+
     spBox1 = new QSpinBox();
     spBox2 = new QSpinBox();
     spBox3 = new QSpinBox();
@@ -35,6 +44,8 @@ imbaLayout::imbaLayout(int i)
 
     this->addWidget(spBox3);
 
+    this->addWidget(colorBtn);
+
 }
 
 imbaLayout::~imbaLayout()
@@ -51,5 +62,49 @@ imbaLayout::~imbaLayout()
     delete l1;
     delete l2;
     delete l3;
+    delete colorBtn;
+}
+
+void imbaLayout::resize(int n)
+{
+    for(int i = 0; i<N; i++)
+    {
+        delete spBox[i];
+        delete label[i];
+    }
+
+
+    for(int i=0;i<n;i++)
+    {
+        spBox[i] = new QSpinBox();
+        spBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        spBox[i]->setMinimum(-100);
+
+        label[i] = new QLabel(QString("x%1 ").arg(i+1));
+
+    }
+}
+
+void imbaLayout::getColor()
+{
+    color = QColorDialog::getColor();
+    QPalette pal = colorBtn->palette();
+    pal.setColor(QPalette::Base,color);
+    pal.setColor(QPalette::Window,color);
+
+    pal.setColor(QPalette::Button,color);
+    pal.setColor(QPalette::WindowText,color);
+
+    colorBtn->setAutoFillBackground(true);
+    colorBtn->setPalette(pal);
+    QString s=QString("background-color: rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
+    colorBtn->setStyleSheet(s);
+    colorBtn->update();
+
+    emit colorChanged();
+
+    qDebug()<<s;
+
+    qDebug()<<"HELP Me";
 }
 

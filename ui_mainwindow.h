@@ -64,9 +64,13 @@ public:
     QHBoxLayout *horizontalLayout_3;
     QPushButton *pushButton_2;
     QPushButton *pushButton_5;
-    QPushButton *pushButton_3;
+    QPushButton *Simplex;
+    QPushButton *pushButton_7;
+    QPushButton *FractLinear;
     QPushButton *pushButton_6;
+    QHBoxLayout *horizontalLayout_4;
     QSpinBox *Equals;
+    QSpinBox *Variables;
     QPushButton *pushButton;
     QPushButton *pushButton_4;
     QStatusBar *statusBar;
@@ -221,25 +225,49 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_3);
 
-        pushButton_3 = new QPushButton(layoutWidget);
-        pushButton_3->setObjectName(QStringLiteral("pushButton_3"));
-        sizePolicy.setHeightForWidth(pushButton_3->sizePolicy().hasHeightForWidth());
-        pushButton_3->setSizePolicy(sizePolicy);
+        Simplex = new QPushButton(layoutWidget);
+        Simplex->setObjectName(QStringLiteral("Simplex"));
+        sizePolicy.setHeightForWidth(Simplex->sizePolicy().hasHeightForWidth());
+        Simplex->setSizePolicy(sizePolicy);
 
-        verticalLayout_2->addWidget(pushButton_3);
+        verticalLayout_2->addWidget(Simplex);
+
+        pushButton_7 = new QPushButton(layoutWidget);
+        pushButton_7->setObjectName(QStringLiteral("pushButton_7"));
+
+        verticalLayout_2->addWidget(pushButton_7);
+
+        FractLinear = new QPushButton(layoutWidget);
+        FractLinear->setObjectName(QStringLiteral("FractLinear"));
+
+        verticalLayout_2->addWidget(FractLinear);
 
         pushButton_6 = new QPushButton(layoutWidget);
         pushButton_6->setObjectName(QStringLiteral("pushButton_6"));
+        pushButton_6->setAutoFillBackground(true);
 
         verticalLayout_2->addWidget(pushButton_6);
 
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
         Equals = new QSpinBox(layoutWidget);
         Equals->setObjectName(QStringLiteral("Equals"));
         Equals->setButtonSymbols(QAbstractSpinBox::NoButtons);
         Equals->setMaximum(10);
         Equals->setValue(4);
 
-        verticalLayout_2->addWidget(Equals);
+        horizontalLayout_4->addWidget(Equals);
+
+        Variables = new QSpinBox(layoutWidget);
+        Variables->setObjectName(QStringLiteral("Variables"));
+        Variables->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        Variables->setValue(2);
+
+        horizontalLayout_4->addWidget(Variables);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_4);
 
         pushButton = new QPushButton(layoutWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
@@ -270,7 +298,7 @@ public:
         MainWindow->setStatusBar(statusBar);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 881, 20));
+        menuBar->setGeometry(QRect(0, 0, 881, 21));
         menuImba_knopka = new QMenu(menuBar);
         menuImba_knopka->setObjectName(QStringLiteral("menuImba_knopka"));
         menu = new QMenu(menuBar);
@@ -294,7 +322,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "\320\234\320\234\320\224\320\236 \320\273\320\260\320\261\320\276\321\200\320\260\321\202\320\276\321\200\320\275\320\260 \342\204\2261", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "\320\234\320\234\320\224\320\236 ", 0));
         actionAbout_2->setText(QApplication::translate("MainWindow", "\320\237\321\200\320\276 Qt", 0));
         action_2->setText(QApplication::translate("MainWindow", "\320\237\321\200\320\276 \320\234\320\265\320\275\320\265", 0));
         actionBuild->setText(QApplication::translate("MainWindow", "Build", 0));
@@ -310,7 +338,9 @@ public:
         label_16->setText(QString());
         pushButton_2->setText(QApplication::translate("MainWindow", "Build", 0));
         pushButton_5->setText(QApplication::translate("MainWindow", "Calculate area", 0));
-        pushButton_3->setText(QApplication::translate("MainWindow", "\320\241\320\270\320\274\320\273\320\265\320\272\321\201", 0));
+        Simplex->setText(QApplication::translate("MainWindow", "\320\241\320\270\320\274\320\273\320\265\320\272\321\201", 0));
+        pushButton_7->setText(QApplication::translate("MainWindow", "\320\246\321\226\320\273\320\276\321\207\320\270\321\201\320\273\320\276\320\262\320\260", 0));
+        FractLinear->setText(QApplication::translate("MainWindow", "\320\224\321\200\320\276\320\261\320\276\320\262\320\276-\320\273\321\226\320\275\321\226\320\271\320\275\320\260", 0));
         pushButton_6->setText(QApplication::translate("MainWindow", "\320\224\320\262\320\276\321\227\321\201\321\202\320\260 \320\267\320\260\320\264\320\260\321\207\320\260", 0));
         pushButton->setText(QApplication::translate("MainWindow", "Clear", 0));
         pushButton_4->setText(QApplication::translate("MainWindow", "Close", 0));

@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i=0;i<ui->Equals->value();i++)
     {
         l[i] = new imbaLayout(i+1);
+        connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
         ui->verticalLayout->insertLayout(1+i,l[i]);
     }
     l[0]->spBox1->setValue(8);   l[0]->spBox2->setValue(-5); l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(40);
@@ -34,9 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     l[3]->spBox1->setValue(2);   l[3]->spBox2->setValue(1);  l[3]->rb2->setChecked(true); l[3]->spBox3->setValue(14);
 
 
-
-
-    r1 = 0, r2 = 0, r3 = 0, r4 = 0;
     on_pushButton_clicked();
 
 }
@@ -56,7 +54,7 @@ void MainWindow::on_pushButton_2_clicked()//Build
         lines[i].b = l[i]->spBox2->value();
         lines[i].c = l[i]->spBox3->value();
         build_line(lines[i], &qlines[i]);
-        scene->addLine(qlines[i]);
+        scene->addLine(qlines[i],QPen(l[i]->color));
     }
 }
 
@@ -147,17 +145,27 @@ void MainWindow::build_line(LINE line, QLineF *qline)
 
 void MainWindow::on_pushButton_5_clicked()//Calculate
 {
-    QPointF Points[14];
-    int k = 0;
+    on_pushButton_clicked();
+    on_pushButton_2_clicked();
+
+    vector <QPointF> points;
+    points.push_back(QPointF(0,0));
+
 
     for(int i = 0; i < 2; i++)
         for(int j = 0; j <equals; j++)
-            solve_matrix(staticLines[i], lines[j], &Points[k++]);
+        {
+            points.resize(points.size()+1);
+            solve_matrix(staticLines[i], lines[j],&points.at(points.size()-1));
+        }
 
 
     for(int i = 0; i < equals; i++)
         for(int j = i+1; j < equals; j++)
-            solve_matrix(lines[i], lines[j], &Points[k++]);
+        {
+            points.resize(points.size()+1);
+            solve_matrix(lines[i], lines[j],&points.at(points.size()-1));
+        }
 
 
 
@@ -167,9 +175,9 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
         maxmin = INFINITY;
 
 
-    for(int i = 0; i < 14; i++)
+    for(int i = 0; i <points.size(); i++)
     {
-        QPointF point = Points[i];
+        QPointF point = points[i];
         if(point.x() >=0 && point.y() >= 0)
         {
             if(!checkPoint(point))
@@ -218,8 +226,10 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
         path.lineTo(goodPoints[i]);
     }
     path.lineTo(goodPoints[0]);
-    scene->addPath(path,QPen(Qt::green),QBrush(Qt::red));
+    scene->addPath(path,QPen(Qt::black),QBrush(Qt::DiagCrossPattern));
     p = 0;
+
+    points.clear();
 }
 
 void MainWindow::solve_matrix(LINE line1, LINE line2, QPointF *point)
@@ -356,131 +366,116 @@ void MainWindow::sort(QPointF *points, int n) //сортування точок 
         cout<<points[i].x()<<' '<<points[i].y()<<endl;
 }
 
-void MainWindow::on_pushButton_3_clicked()//Симлекс
-{
-    //створили матрцю
+//void MainWindow::on_pushButton_3_clicked()//Симлекс
+//{
+//    //створили матрцю
+//    vector< vector<double> > matrix;
+//    matrix.resize(equals);
+//    for(int i = 0; i < equals; i++)
+//        matrix[i].resize(2 + equals);
 
-    vector< vector<double> > matrix;
-    matrix.resize(equals);
-    for(int i=0;i<equals;i++)
-        matrix[i].resize(2);
-
-    //Проініціалізуємо масив 0
-    for(int i=0;i<equals;i++)
-        for(int j=0;j<2;j++)
-            matrix[i][j]=0;
-
-
-    //записали Х1 та Х2
-    for(int i=0;i<equals;i++)
-    {
-        matrix[i][0]=l[i]->spBox1->value();
-        matrix[i][1]=l[i]->spBox2->value();
-    }
+//    //Проініціалізуємо масив 0
+//    for(int i = 0; i < equals; i++)
+//        for(int j = 0; j < 2+equals; j++)
+//            matrix[i][j]=0;
 
 
-    // Записали додаткові змінні
-    for(int i=0;i<matrix.size();i++)
-        matrix[i].resize(2+equals);
-
-    for(int i=2;i<2+equals;i++)
-    {
-        matrix[i-2][i]=1;
-    }
+//    // записали Х1 та Х2
+//    for(int i = 0; i < equals; i++)
+//    {
+//        matrix[i][0]=l[i]->spBox1->value();
+//        matrix[i][1]=l[i]->spBox2->value();
+//    }
 
 
-    for(int i=0;i<equals;i++)
-    {
-        if(l[i]->rb1->isChecked())
-        {
-            for(int i=0;i<matrix.size();i++)
-                matrix[i].resize(matrix[i].size()+1);
-            matrix[i][matrix[i].size()-1]=-1;
-        }
-    }
+//    // Записали додаткові змінні
+//    for(int i = 0; i < matrix.size(); i++)
+//        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
 
-    for(int i=0;i<matrix.size();i++)
-        matrix[i].resize(matrix[0].size()+1);
+//    // записали штучні змінні
+//    for(int i = 0; i < matrix.size(); i++)
+//        if(l[i]->rb1->isChecked())
+//        {
+//            for(int j = 0; j < equals; j++)
+//                matrix[j].resize(matrix[j].size() + 1);
+//            matrix[i][matrix[0].size()-1] = 1;
+//        }
 
-    for(int i=0;i<equals;i++)
-    {
-        matrix[i][matrix[0].size()-1] = l[i]->spBox3->value()   ;
-    }
+//    // розширили для вільних членів 8==D
+//    for(int i = 0; i < matrix.size(); i++)
+//        matrix[i].resize(matrix[i].size() + 1);
+//    // загнали вільні члени
+//    for(int i = 0; i < matrix.size(); i++)
+//        matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
+//    // вивід для дебагу
+//    for(unsigned i = 0; i < matrix.size(); i++)
+//    {
+//        for(unsigned j = 0; j < matrix[0].size(); j++)
+//            cout << matrix[i][j] << ' ';
+//        cout << endl;
+//    }
 
-    for(int i=0;i<matrix.size();i++)
-    {
-        for(int j=0;j<matrix[0].size();j++)
-            cout<<matrix[i][j]<<' ';
-        cout<<endl;
-    }
 
+//    vector<double> value;
+//    for(unsigned i = 0; i < matrix[0].size(); i++)
+//        value.push_back(0);
 
-    double result;
-    vector<double> value;
-    for(int i=0;i<matrix[0].size();i++)
-        value.push_back(0);
+//    // заносимо в value M для штучних змінних
+//    int j = 0;
+//    for(int i = 0; i < matrix.size(); i++)
+//    {
+//        if(l[i]->rb1->isChecked())
+//            value[2 + matrix.size() + j++] = -1000000000000;// 2(кількість норм змінних)
+//        //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
+//    }
 
-    for(int i=0;i<matrix.size();i++)
-    {
-        if(l[i]->rb1->isChecked())
-            value[i+2]=-1000000000000;
-    }
+//    cout << endl;
+//    for(unsigned i = 0; i < value.size(); i++)
+//        cout << value[i] << ' ';
 
-    cout<<endl;
-    for(int i=0;i<value.size();i++)
-        cout<<value[i]<<' ';
+//    cout << endl;
+//    /// Змінити
+//    ///
+//    value[0] = ui->spinBox_2->value();
+//    value[1] = ui->spinBox->value();
 
-    cout<<endl;
-    /// Змінити
-    ///
-    value[0] = ui->spinBox_2->value();
-    value[1] = ui->spinBox->value();
+//    if(ui->radioButton_12->isChecked())
+//    {
+//        value[0] = - ui->spinBox_2->value();
+//        value[1] = -ui->spinBox->value();
+//    }
 
-    if(ui->radioButton_12->isChecked())
-    {
-        value[0] = - ui->spinBox_2->value();
-        value[1] = -ui->spinBox->value();
-    }
+//    // Сформована матриця
 
-    int validatei, validatej = 0;
-    while(validatej != -1)
-    {
+//    double result;
+//    int validatei, validatej = 0;
+//    while(validatej != -1)
+//    {
 
-        vector<double> simplex;
-        simplex.resize(matrix[0].size(),0);
+//        vector<double> simplex;
+//        simplex.resize(matrix[0].size(),0);
 
-        vector<double> multi;
-        multi.resize(equals,0);
+//        vector<double> multi;
+//        multi.resize(matrix.size(),0);
 
-        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+//        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
 
-        QString s = "";
-        for(int i=0;i<matrix.size();i++)
-        {
-            s+=QString("%1\t").arg(multi[i]);
-            for(int j=0;j<matrix[0].size();j++)
-            {
-                s+=QString("%1\t").arg(matrix[i][j]);
-            }
-            s+="\n";
-        }
-        s+="\tSimplex row:\n\t";
+//        QString s = formOutput(matrix,multi,value,simplex);
+//        QMessageBox::about(this, "Симплекс-метод", s);
 
-        for(int i=0;i<matrix[0].size();i++)
-            s+=QString("%1\t").arg(simplex[i]);
-        QMessageBox::about(this, "Симплекс-метод",
-                           s);
-        validatej = ValidateSimplexRow(&simplex,0);
-        if(validatej != -1)
-        {
-            validatei = MinimalGRZero(validatej, matrix);
-            if(validatei == -1)
-                printf("rakal sistem detected");
-            MakeVector(validatei, validatej,&matrix);
-        }
-
-    }
-}
+//        validatej = ValidateSimplexRow(&simplex,0);
+//        if(validatej != -1)
+//        {
+//            validatei = MinimalGRZero(validatej, matrix);
+//            if(validatei == -1)
+//                printf("Не сумісна матриця");
+//            MakeVector(validatei, validatej,&matrix);
+//        }
+//    }
+//    QMessageBox::information(this, "Симплекс метод",
+//                             QString("Result %1").arg(result)  ,
+//                             QMessageBox::Close);
+//}
 
 void MainWindow::on_Equals_valueChanged(int arg1)
 {
@@ -528,100 +523,401 @@ bool MainWindow::checkPoint(QPointF point)
 
 void MainWindow::on_pushButton_6_clicked() //Двоїста
 {
-
+    //створили матрицю
     vector< vector<double> > matrix;
     matrix.resize(2);
-    for(int i=0;i<2;i++)
+    for(int i = 0; i < 2; i++)
         matrix[i].resize(equals);
-
-    for(int j=0;j<equals;j++)
+    //занесли значення
+    for(int i = 0; i < equals; i++)
     {
+        matrix[0][i] = l[i]->spBox1->value();
+        matrix[1][i] = l[i]->spBox2->value();
 
-        matrix[0][j]=l[j]->spBox1->value();
-        matrix[1][j]=l[j]->spBox2->value();
-
-        if(l[j]->rb1->isChecked())
+        if(l[i]->rb1->isChecked())
         {
-            matrix[1][j]*=-1;
-            matrix[0][j]*=-1;
-
+            matrix[1][i] *= -1;
+            matrix[0][i] *= -1;
         }
     }
-
-
-    for(int i=0;i<matrix.size();i++)
-        matrix[i].resize(4+equals);
+    for(unsigned i = 0; i < matrix.size(); i++)
+        matrix[i].resize(4 + equals);
     ///ЗМІНИТИ
     /// ОБОВ'ЯЗКОВО
-    //    for(int i=equals;i<matrix[0].size()+1;i+=2)
-    //    {
-    //            matrix[0][i]=0;
-    //            matrix[1][i]=0;
 
-    //            matrix[1][i+1]=-1;
-    //            matrix[0][i+1]=1;
-    //    }
+    matrix[0][4] = -1;
+    matrix[1][4] = 0;
 
-    matrix[0][4]=1;
-    matrix[1][4]=0;
+    matrix[0][5] = 0;
+    matrix[1][5] = -1;
 
-    matrix[0][5]=-1;
-    matrix[1][5]=0;
+    matrix[0][6] = 1;
+    matrix[1][6] = 0;
 
+    matrix[0][7] = 0;
+    matrix[1][7] = 1;
 
-    matrix[0][6]=0;
-    matrix[1][6]=1;
-
-    matrix[0][7]=0;
-    matrix[1][7]=-1;
-
-
-
-    for(int i=0;i<matrix.size();i++)
-        matrix[i].resize(matrix[0].size() + 1);
-
+    // розширили для вільних члені
+    for(unsigned i = 0; i < matrix.size(); i++)
+        matrix[i].resize(matrix[i].size() + 1);
+    // загнали вільні члени
     matrix[0][matrix[0].size()-1] = ui->spinBox_2->value();
-    matrix[1][matrix[0].size()-1] = ui->spinBox->value();
-
-
-    for(int i=0;i<matrix.size();i++)
+    matrix[1][matrix[1].size()-1] = ui->spinBox->value();
+    // вивід для дебагу
+    for(unsigned i = 0; i < matrix.size(); i++)
     {
-        for(int j=0;j<matrix[0].size();j++)
-            cout<<matrix[i][j]<<' ';
-        cout<<endl;
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+            cout << matrix[i][j] << ' ';
+        cout << endl;
     }
-
-
-
 
     vector<double> value;
-    for(int i=0;i<matrix[0].size();i++)
+    for(unsigned i = 0; i < matrix[0].size(); i++)
         value.push_back(0);
-
-    for(int i=0;i<equals;i++)
+    // заносимо ціни
+    for(int i = 0; i < equals; i++)
     {
-        value[i]=l[i]->spBox3->value();
+        value[i] = -l[i]->spBox3->value();//двоїста шукає мінімум
         if(l[i]->rb1->isChecked())
-            value[i]*=-1;
+            value[i] *= -1;
     }
+    //    -2 -> кількість змінних(x)
+    for(unsigned i = matrix[0].size()-1 -2; i < matrix[0].size()-1; i++)
+        value[i]=-10000000;
 
-    for(int i=equals;i<matrix[0].size()-1;i++)
-    {
-        for(int j=0;j<2;j++)
-            if(matrix[j][i]==1)
-                value[i]=-1000000000;
-    }
-
-
-
-    for(int i=0;i<value.size();i++)
-    {
-            cout<<value[i]<<' ';
-    }
+    for(unsigned i = 0;i < value.size(); i++)
+        cout<<value[i]<<' ';
     cout<<endl;
 
     ///Початок симлпексу
     ///
+    double result;
+    int validatei, validatej = 0;
+    while(validatej != -1)
+    {
+        vector<double> simplex;
+        simplex.resize(matrix[0].size(),0);
+
+        vector<double> multi;
+        multi.resize(equals,0);
+
+        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+
+        QString s = formOutput(matrix,multi,value,simplex);
+        QMessageBox::about(this, "Двоїстий симплекс-метод", s);
+        validatej = ValidateSimplexRow(&simplex,0);
+        if(validatej != -1)
+        {
+            validatei = MinimalGRZero(validatej, matrix);
+            if(validatei == -1)
+                printf("Не сумісна матриця");
+            MakeVector(validatei, validatej,&matrix);
+        }
+    }
+    QMessageBox::information(this, "Двоїстий симплекс метод",
+                             QString("Result %1").arg(-result)  ,
+                             QMessageBox::Close);
+
+}
+
+void MainWindow::on_Variables_editingFinished()
+{
+
+}
+
+void MainWindow::on_pushButton_7_clicked() //ЦЧ
+{
+    //створили матрцю
+    vector< vector<double> > matrix;
+    matrix.resize(equals);
+    for(int i = 0; i < equals; i++)
+        matrix[i].resize(2 + equals);
+
+    //Проініціалізуємо масив 0
+    for(int i = 0; i < equals; i++)
+        for(int j = 0; j < 2+equals; j++)
+            matrix[i][j]=0;
+
+
+    // записали Х1 та Х2
+    for(int i = 0; i < equals; i++)
+    {
+        matrix[i][0]=l[i]->spBox1->value();
+        matrix[i][1]=l[i]->spBox2->value();
+    }
+
+
+    // Записали додаткові змінні
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
+
+    // записали штучні змінні
+    for(int i = 0; i < matrix.size(); i++)
+        if(l[i]->rb1->isChecked())
+        {
+            for(int j = 0; j < equals; j++)
+                matrix[j].resize(matrix[j].size() + 1);
+            matrix[i][matrix[0].size()-1] = 1;
+        }
+
+    // розширили для вільних членів 8==D
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i].resize(matrix[i].size() + 1);
+    // загнали вільні члени
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
+    // вивід для дебагу
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+            cout << matrix[i][j] << ' ';
+        cout << endl;
+    }
+
+
+    vector<double> value;
+    for(unsigned i = 0; i < matrix[0].size(); i++)
+        value.push_back(0);
+
+    // заносимо в value M для штучних змінних
+    int j = 0;
+    for(int i = 0; i < matrix.size(); i++)
+    {
+        if(l[i]->rb1->isChecked())
+            value[2 + matrix.size() + j++] = -1000000000000;// 2(кількість норм змінних)
+        //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
+    }
+
+    cout << endl;
+    for(unsigned i = 0; i < value.size(); i++)
+        cout << value[i] << ' ';
+
+    cout << endl;
+    /// Змінити
+    ///
+    value[0] = ui->spinBox_2->value();
+    value[1] = ui->spinBox->value();
+
+    if(ui->radioButton_12->isChecked())
+    {
+        value[0] = - ui->spinBox_2->value();
+        value[1] = -ui->spinBox->value();
+    }
+
+    // Сформована матриця
+
+
+    double result;
+    int validatei, validatej = 0;
+    vector<double> simplex;
+    while(validatej != -1)
+    {
+        simplex.clear();
+        simplex.resize(matrix[0].size(),0);
+
+        vector<double> multi;
+        multi.resize(matrix.size(),0);
+        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+
+        QString s = formOutput(matrix,multi,value,simplex);
+        QMessageBox::about(this, "Симплекс-метод", s);
+
+        validatej = ValidateSimplexRow(&simplex,0);
+        if(validatej != -1)
+        {
+            validatei = MinimalGRZero(validatej, matrix);
+            if(validatei == -1)
+                printf("Не сумісна матриця");
+            MakeVector(validatei, validatej,&matrix);
+        }
+
+    }
+    ///Початок ЦЧЛП
+    double max=0;
+    int imax=-1;  //Рядок який треба фіксити
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        if((matrix[i][matrix[i].size()-1] - (int)matrix[0][matrix[i].size()-1])>max)
+        {
+            max = (matrix[i][matrix[0].size()-1] - (int)matrix[i][matrix[0].size()-1]);
+            imax = i;
+        }
+    }
+
+    cout<<imax<<endl;
+
+    //розширили під новий рядок
+    matrix.resize(matrix.size()+1);
+
+    for(int i=0;i<matrix.size();i++)
+        matrix.at(i).resize(matrix.at(0).size()+1);
+
+    //записали значення в новий рядок
+
+    for(int j = 0; j < matrix[0].size();j++)
+    {
+        if(matrix.at(imax).at(j) > 0)
+        {
+            matrix.at(matrix.size()-1).at(j) = -( matrix.at(imax).at(j) - (int)matrix.at(imax).at(j) );
+            /// Приклад
+            /// у тебе там 3/8
+            /// Результат = 3/8 - 1 = -5/8
+        }
+
+        if(matrix.at(imax).at(j) < 0)
+        {
+            matrix.at(matrix.size()-1).at(j) = -(int)matrix.at(imax).at(j) + 1 +  matrix.at(imax).at(j);
+
+            /// Імба додавання
+            /// Приклад:
+            /// у тебе там -3/8
+            /// Результат = -3/8 + 1 = 5/8
+        }
+    }
+
+    //Вставити стовпець між останнім і вектором В
+    double *tmp = new double[matrix.size()-1];
+
+    for(int i=0;i<matrix.size();i++)
+        tmp[i] = matrix.at(i).at(matrix[0].size()-2);
+
+    for(int i=0;i<matrix.size();i++)
+        matrix.at(i).at(matrix[0].size()-2) = 0;
+
+    matrix.at(matrix.size()-1).at(matrix[0].size()-2)=1;
+
+    for(int i=0;i<matrix.size();i++)
+        matrix.at(i).at(matrix.at(0).size()-1)=tmp[i];
+
+    cout<<endl<<endl;
+
+    for(int i=0;i<matrix.size();i++)
+    {
+        for(int j=0;j<matrix.at(0).size();j++)
+            cout<<matrix[i][j]<<'\t';
+        cout<<endl;
+    }
+
+    double jmin=-1;
+    double min=INFINITY;
+    if(imax != -1)
+    {
+        for(int j=0;j<matrix[0].size()-1;j++)
+        {
+            if(  simplex[j] / matrix.at(imax).at(j) < min && simplex[j] / matrix.at(imax).at(j) > 0)
+            {
+                min=simplex[j] / matrix.at(imax).at(j);
+                jmin=j;
+            }
+
+        }
+    }
+    imax = matrix.size()-1;
+    cout<<endl<<jmin<<' '<<imax<<endl;
+
+    MakeVector(imax,jmin,&matrix);
+    simplex.clear();
+    simplex.resize(matrix[0].size(),0);
+    vector<double> multi;
+    multi.resize(matrix.size(),0);
+
+    value.resize(value.size()+1);
+
+    result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+
+    for(int i=0;i<matrix.size();i++)
+    {
+        for(int j=0;j<matrix.at(0).size();j++)
+            cout<<matrix[i][j]<<'\t';
+        cout<<endl;
+    }
+
+}
+
+void MainWindow::on_FractLinear_clicked()
+{
+    //створили матрцю
+    vector< vector<double> > matrix;
+    matrix.resize(equals);
+    for(int i = 0; i < equals +1 ; i++)
+        matrix[i].resize(2 + equals);
+
+    //Проініціалізуємо масив 0
+    for(int i = 0; i < equals; i++)
+        for(int j = 0; j < 2+equals; j++)
+            matrix[i][j]=0;
+
+
+    // записали Х1 та Х2
+    for(int i = 1; i <= equals; i++)
+    {
+        matrix[i][0]=l[i]->spBox1->value();
+        matrix[i][1]=l[i]->spBox2->value();
+    }
+
+
+    // Записали додаткові змінні
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
+
+    // записали штучні змінні
+    for(int i = 0; i < matrix.size(); i++)
+        if(l[i]->rb1->isChecked())
+        {
+            for(int j = 0; j < equals; j++)
+                matrix[j].resize(matrix[j].size() + 1);
+            matrix[i][matrix[0].size()-1] = 1;
+        }
+
+    // розширили для вільних членів 8==D
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i].resize(matrix[i].size() + 1);
+    // загнали вільні члени
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
+
+
+    //    // вивід для дебагу
+    //    for(unsigned i = 0; i < matrix.size(); i++)
+    //    {
+    //        for(unsigned j = 0; j < matrix[0].size(); j++)
+    //            cout << matrix[i][j] << ' ';
+    //        cout << endl;
+    //    }
+
+
+    vector<double> value;
+    for(unsigned i = 0; i < matrix[0].size(); i++)
+        value.push_back(0);
+
+    // заносимо в value M для штучних змінних
+    int j = 0;
+    for(int i = 0; i < matrix.size(); i++)
+    {
+        if(l[i]->rb1->isChecked())
+            value[2 + matrix.size() + j++] = -1000000000000;// 2(кількість норм змінних)
+        //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
+    }
+
+    cout << endl;
+    for(unsigned i = 0; i < value.size(); i++)
+        cout << value[i] << ' ';
+
+    cout << endl;
+    /// Змінити
+    ///
+    value[0] = ui->spinBox_2->value();
+    value[1] = ui->spinBox->value();
+
+    if(ui->radioButton_12->isChecked())
+    {
+        value[0] = - ui->spinBox_2->value();
+        value[1] = -ui->spinBox->value();
+    }
+
+    // Сформована матриця
+
+
     double result;
     int validatei, validatej = 0;
     while(validatej != -1)
@@ -631,35 +927,188 @@ void MainWindow::on_pushButton_6_clicked() //Двоїста
         simplex.resize(matrix[0].size(),0);
 
         vector<double> multi;
-        multi.resize(equals,0);
+        multi.resize(matrix.size(),0);
 
         result = FormSimlexRow(&matrix, &value, &simplex,&multi);
 
-        QString s = "";
-        for(int i=0;i<matrix.size();i++)
-        {
-            s+=QString("%1\t").arg(multi[i]);
-            for(int j=0;j<matrix[0].size();j++)
-            {
-                s+=QString("%1\t").arg(matrix[i][j]);
-            }
-            s+="\n";
-        }
-        s+="\tSimplex row:\n\t";
+        QString s = formOutput(matrix,multi,value,simplex);
+        QMessageBox::about(this, "Симплекс-метод", s);
 
-        for(int i=0;i<matrix[0].size();i++)
-            s+=QString("%1\t").arg(simplex[i]);
-        QMessageBox::about(this, "Симплекс-метод",
-                           s);
         validatej = ValidateSimplexRow(&simplex,0);
         if(validatej != -1)
         {
             validatei = MinimalGRZero(validatej, matrix);
             if(validatei == -1)
-                printf("rakal sistem detected");
+                printf("Не сумісна матриця");
             MakeVector(validatei, validatej,&matrix);
         }
+    }
+    QMessageBox::information(this, "Симплекс метод",
+                             QString("Result %1").arg(result)  ,
+                             QMessageBox::Close);
 
+}
+
+QString MainWindow::formOutput(vector<vector<double> > &matrix, vector<double> &multi, vector<double> &value, vector<double> &simplex)
+{
+    QString s = "";
+    s += QString("\t");
+    for(unsigned i = 0; i < matrix[0].size() - 1; i++)
+    {
+        QString buf;
+        buf.sprintf(" X%d\t", i+1);
+        s += buf;
+    }
+    s += QString(" B\n");
+
+    s += QString("C\t");
+    for(unsigned i = 0; i < matrix[0].size() - 1; i++)
+    {
+        QString buf;
+        if(fabs(value[i]) > 100000)// треба буде подумати
+            buf.sprintf(" -M\t");
+        else
+            buf.sprintf(" %.2lf\t", value[i]);
+        s += buf;
+    }
+    s += "\n";
+
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        if(fabs(multi[i]) < 100000)
+            s += QString(" %1\t|").arg(multi[i]);
+        else
+            s += QString(multi[i] < 0 ? "-M\t|":" M\t|");
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+        {
+            QString buf;
+            buf.sprintf("% .2lf\t", matrix[i][j]);
+            s+=buf;
+        }
+        s += "\n";
+    }
+    s+="Simplex row:\n\t";
+    for(unsigned i = 0; i < matrix[0].size(); i++)
+    {
+
+        QString buf;
+        if(fabs(simplex[i]) < 100000)// треба буде подумати
+            buf.sprintf("% .2lf\t", simplex[i]);
+        else
+            buf.sprintf(simplex[i] < 0 ? "-M\t":" M\t");
+        s+=buf;
     }
 
+    return s;
+}
+
+void MainWindow::on_Simplex_clicked()
+{
+    //створили матрцю
+    vector< vector<double> > matrix;
+    matrix.resize(equals);
+    for(int i = 0; i < equals; i++)
+        matrix[i].resize(2 + equals);
+
+    //Проініціалізуємо масив 0
+    for(int i = 0; i < equals; i++)
+        for(int j = 0; j < 2+equals; j++)
+            matrix[i][j]=0;
+
+
+    // записали Х1 та Х2
+    for(int i = 0; i < equals; i++)
+    {
+        matrix[i][0]=l[i]->spBox1->value();
+        matrix[i][1]=l[i]->spBox2->value();
+    }
+
+
+    // Записали додаткові змінні
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
+
+    // записали штучні змінні
+    for(int i = 0; i < matrix.size(); i++)
+        if(l[i]->rb1->isChecked())
+        {
+            for(int j = 0; j < equals; j++)
+                matrix[j].resize(matrix[j].size() + 1);
+            matrix[i][matrix[0].size()-1] = 1;
+        }
+
+    // розширили для вільних членів 8==D
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i].resize(matrix[i].size() + 1);
+    // загнали вільні члени
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
+    // вивід для дебагу
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+            cout << matrix[i][j] << ' ';
+        cout << endl;
+    }
+
+
+    vector<double> value;
+    for(unsigned i = 0; i < matrix[0].size(); i++)
+        value.push_back(0);
+
+    // заносимо в value M для штучних змінних
+    int j = 0;
+    for(int i = 0; i < matrix.size(); i++)
+    {
+        if(l[i]->rb1->isChecked())
+            value[2 + matrix.size() + j++] = -1000000000000;// 2(кількість норм змінних)
+        //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
+    }
+
+    cout << endl;
+    for(unsigned i = 0; i < value.size(); i++)
+        cout << value[i] << ' ';
+
+    cout << endl;
+    /// Змінити
+    ///
+    value[0] = ui->spinBox_2->value();
+    value[1] = ui->spinBox->value();
+
+    if(ui->radioButton_12->isChecked())
+    {
+        value[0] = - ui->spinBox_2->value();
+        value[1] = -ui->spinBox->value();
+    }
+
+    // Сформована матриця
+
+    double result;
+    int validatei, validatej = 0;
+    while(validatej != -1)
+    {
+
+        vector<double> simplex;
+        simplex.resize(matrix[0].size(),0);
+
+        vector<double> multi;
+        multi.resize(matrix.size(),0);
+
+        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+
+        QString s = formOutput(matrix,multi,value,simplex);
+        QMessageBox::about(this, "Симплекс-метод", s);
+
+        validatej = ValidateSimplexRow(&simplex,0);
+        if(validatej != -1)
+        {
+            validatei = MinimalGRZero(validatej, matrix);
+            if(validatei == -1)
+                printf("Не сумісна матриця");
+            MakeVector(validatei, validatej,&matrix);
+        }
+    }
+    QMessageBox::information(this, "Симплекс метод",
+                             QString("Result %1").arg(result)  ,
+                             QMessageBox::Close);
 }

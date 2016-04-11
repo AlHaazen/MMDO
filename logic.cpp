@@ -1,4 +1,4 @@
-﻿#include "logic.h"
+#include "logic.h"
 
 
 void MakeVector(int m, int n, vector<vector<double> > *matrix)
@@ -6,9 +6,9 @@ void MakeVector(int m, int n, vector<vector<double> > *matrix)
     // cout<<"SSM "<< (*matrix)[0][0];
     int i, j;
     int row = (*matrix).size(), col = (*matrix)[0].size();
-
-    cout<<endl<<"SSM "<<row<<' ';
-    cout<<col<<endl;
+    //
+    // cout<<endl<<"SSM "<<row<<' ';
+    // cout<<col<<endl;
 
     if((*matrix)[m][n] == 0)
     {
@@ -35,18 +35,18 @@ void MakeVector(int m, int n, vector<vector<double> > *matrix)
 
 void MatrixOut(vector<vector<double> > *matrix)
 {
-    //    printf("\n");
-    //    int i, j;
-    //    for(j = 0; j < J-1; j++)
-    //        printf("   X%d   ", j+1);
-    //    printf("   B\n");
-    //    for(i = 0; i < I; i++)
-    //    {
-    //        for(j = 0; j < J; j++)
-    //            printf("% 7.3lf ", matrix[i][j]);
-    //        printf("\n");
-    //    }
-    ////    printf("\n");
+//        printf("\n");
+//        int i, j;
+//        for(j = 0; j < J-1; j++)
+//            printf("   X%d   ", j+1);
+//        printf("   B\n");
+//        for(i = 0; i < I; i++)
+//        {
+//            for(j = 0; j < J; j++)
+//                printf("% 7.3lf ", matrix[i][j]);
+//            printf("\n");
+//        }
+//        printf("\n");
 }
 
 double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vector<double> *simplex, vector<double> *multi)
@@ -64,10 +64,14 @@ double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vec
             multi->at(k)=mult[k];
         }
     }
+
     for(j = 0; j <col; j++)
     {
         for(i = 0; i < row; i++)
+           {
             simplex->at(j) += mult[i]*(*matrix)[i][j];
+            //cout<<"simplex at "<<j<<' '<< simplex->at(j) << ' '<< mult[i]<<' '<< (*matrix)[i][j]<<endl;
+        }
         simplex->at(j) -= value->at(j);
     }
 
