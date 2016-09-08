@@ -3,12 +3,9 @@
 
 void MakeVector(int m, int n, vector<vector<double> > *matrix)
 {
-    // cout<<"SSM "<< (*matrix)[0][0];
+
     int i, j;
     int row = (*matrix).size(), col = (*matrix)[0].size();
-    //
-    // cout<<endl<<"SSM "<<row<<' ';
-    // cout<<col<<endl;
 
     if((*matrix)[m][n] == 0)
     {
@@ -20,6 +17,7 @@ void MakeVector(int m, int n, vector<vector<double> > *matrix)
         for(j = 0; j <col; j++)
             (*matrix)[m][j] += (*matrix)[i][j];
     }
+
     double a = (*matrix)[m][n];
     for(j = 0; j < col; j++)
         (*matrix)[m][j] /= a;
@@ -35,18 +33,18 @@ void MakeVector(int m, int n, vector<vector<double> > *matrix)
 
 void MatrixOut(vector<vector<double> > *matrix)
 {
-//        printf("\n");
-//        int i, j;
-//        for(j = 0; j < J-1; j++)
-//            printf("   X%d   ", j+1);
-//        printf("   B\n");
-//        for(i = 0; i < I; i++)
-//        {
-//            for(j = 0; j < J; j++)
-//                printf("% 7.3lf ", matrix[i][j]);
-//            printf("\n");
-//        }
-//        printf("\n");
+    //        printf("\n");
+    //        int i, j;
+    //        for(j = 0; j < J-1; j++)
+    //            printf("   X%d   ", j+1);
+    //        printf("   B\n");
+    //        for(i = 0; i < I; i++)
+    //        {
+    //            for(j = 0; j < J; j++)
+    //                printf("% 7.3lf ", matrix[i][j]);
+    //            printf("\n");
+    //        }
+    //        printf("\n");
 }
 
 double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vector<double> *simplex, vector<double> *multi)
@@ -56,7 +54,7 @@ double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vec
     double mult[row];
     int i, j, k;
     double result = 0;
-    for(j = 0; j < col; j++)
+    for(j = 0; j < col-1; j++)
     {
         if((k = oVector(*matrix, j)) != -1)
         {
@@ -65,10 +63,12 @@ double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vec
         }
     }
 
+
+
     for(j = 0; j <col; j++)
     {
         for(i = 0; i < row; i++)
-           {
+        {
             simplex->at(j) += mult[i]*(*matrix)[i][j];
             //cout<<"simplex at "<<j<<' '<< simplex->at(j) << ' '<< mult[i]<<' '<< (*matrix)[i][j]<<endl;
         }
@@ -77,6 +77,8 @@ double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vec
 
     for(i = 0; i < row; i++)
         result += mult[i]*(*matrix)[i][col-1];
+
+    simplex->at(simplex->size()-1) = result;
     return result;
 }
 
@@ -98,38 +100,33 @@ int  oVector(vector<vector<double> > matrix, int n)
         return -1;
 }
 
-int ValidateSimplexRow(vector<double> *simplex, int op)
+int ValidateSimplexRow(vector<double> *simplex)
 {
     /// op
     /// 1 = min, -1 - max
 
-    cout<<op<<endl;
     int r = -1, j;
 
-    double min;
-    if(op)
-        min=-0;
-    else
-        min=0;
+    double min = INFINITY;
 
     for(j = 0; j <simplex->size()-1; j++)
-       if(simplex->at(j) < 0 && !op || simplex->at(j) > 0 && op)
+        if(simplex->at(j) < 0)
         {
-            if(op)
-            {
-                if(min < simplex->at(j))
-                {
-                    min = simplex->at(j);
-                    r = j;
-                }
-            }
+            //            if(op)
+            //            {
+            //                if(min < simplex->at(j))
+            //                {
+            //                    min = simplex->at(j);
+            //                    r = j;
+            //                }
+            //            }
 
-            else
-                if(min > simplex->at(j))
-                {
-                    min = simplex->at(j);
-                    r = j;
-                }
+            //            else
+            if(min > simplex->at(j))
+            {
+                min = simplex->at(j);
+                r = j;
+            }
 
         }
         else

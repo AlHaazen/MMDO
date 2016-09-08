@@ -16,12 +16,20 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     logic.cpp \
     imba.cpp \
-    view.cpp
+    view.cpp \
+#    ellipse.cpp \
+#    equation.cpp \
+#    plots.cpp \
+#    point.cpp
 
 HEADERS  += mainwindow.h \
     logic.h \
     imba.h \
-    view.h
+    view.h \
+#    ellipse.h \
+#    equation.h \
+#    plots.h \
+#    point.h
 
 FORMS    += mainwindow.ui
 CONFIG += c++11

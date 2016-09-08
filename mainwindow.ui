@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ММДО </string>
+   <string>МС</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icon.qrc">
@@ -23,8 +23,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>741</width>
-      <height>401</height>
+      <width>681</width>
+      <height>411</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -43,92 +43,129 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox_2">
-           <property name="buttonSymbols">
-            <enum>QAbstractSpinBox::NoButtons</enum>
-           </property>
-           <property name="minimum">
-            <number>-100</number>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>x1 +</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="spinBox">
-           <property name="buttonSymbols">
-            <enum>QAbstractSpinBox::NoButtons</enum>
-           </property>
-           <property name="minimum">
-            <number>-100</number>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>3</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>x2 -&gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBox_5">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="title">
-            <string/>
-           </property>
-           <widget class="QWidget" name="layoutWidget_5">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>0</y>
-              <width>101</width>
-              <height>21</height>
-             </rect>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QRadioButton" name="radioButton_11">
-               <property name="text">
-                <string>max</string>
+              <widget class="QSpinBox" name="spinBox_2">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
                </property>
-               <property name="checked">
-                <bool>true</bool>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>31</number>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="radioButton_12">
-               <property name="text">
-                <string>min</string>
+              <widget class="QSpinBox" name="spinBox_3">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
                </property>
               </widget>
              </item>
             </layout>
-           </widget>
-          </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>x1 +</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QSpinBox" name="spinBox">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>74</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBox_4">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>x2 -&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QRadioButton" name="radioButton_11">
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>&amp;max</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_12">
+                 <property name="text">
+                  <string>mi&amp;n</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox">
+               <property name="text">
+                <string>Дробова</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
@@ -225,7 +262,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_7">
+            <widget class="QPushButton" name="IntLinear">
              <property name="text">
               <string>Цілочислова</string>
              </property>
@@ -239,7 +276,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_6">
+            <widget class="QPushButton" name="DualSimplex">
              <property name="autoFillBackground">
               <bool>true</bool>
              </property>
@@ -259,7 +296,7 @@
                 <number>10</number>
                </property>
                <property name="value">
-                <number>4</number>
+                <number>7</number>
                </property>
               </widget>
              </item>
@@ -276,7 +313,7 @@
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="Clear">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
@@ -289,7 +326,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="Close">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
@@ -317,7 +354,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuImba_knopka">
@@ -342,7 +379,7 @@
   </widget>
   <action name="actionAbout_2">
    <property name="text">
-    <string>Про Qt</string>
+    <string>Про &amp;Qt</string>
    </property>
   </action>
   <action name="action_2">
@@ -352,22 +389,22 @@
   </action>
   <action name="actionBuild">
    <property name="text">
-    <string>Build</string>
+    <string>&amp;Build</string>
    </property>
   </action>
   <action name="actionCalculate_area">
    <property name="text">
-    <string>Calculate area</string>
+    <string>&amp;Calculate area</string>
    </property>
   </action>
   <action name="actionClear">
    <property name="text">
-    <string>Clear</string>
+    <string>C&amp;lear</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
-    <string>Close</string>
+    <string>Cl&amp;ose</string>
    </property>
   </action>
  </widget>

@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include <QDebug>
+#include <QPlainTextEdit>
+
 
 #include <vector>
 #include <iostream>
@@ -15,6 +17,7 @@
 
 
 using namespace std;
+
 namespace Ui {
 class MainWindow;
 }
@@ -39,11 +42,7 @@ private slots:
 
     void on_pushButton_2_clicked();
 
-    void on_pushButton_clicked();
-
     void build_line(LINE line, QLineF *lines);
-
-    void on_pushButton_4_clicked();
 
     void on_pushButton_5_clicked();
 
@@ -60,8 +59,6 @@ private slots:
     void on_actionClear_triggered();
 
     void on_actionClose_triggered();
-    
-//    void on_pushButton_3_clicked();
 
     void sort(QPointF *points, int n);
 
@@ -69,17 +66,25 @@ private slots:
 
     bool checkPoint(QPointF point);
 
-    void on_pushButton_6_clicked();
-
     void on_Variables_editingFinished();
 
-    void on_pushButton_7_clicked();
+    void on_Clear_clicked();
 
-    void on_FractLinear_clicked();
+    void on_Close_clicked();
 
     QString formOutput(vector<vector<double> > &matrix, vector<double> &multi, vector<double> &value, vector<double> &simplex);
 
     void on_Simplex_clicked();
+
+    void on_IntLinear_clicked();
+
+    void on_DualSimplex_clicked();
+
+    void on_FractLinear_clicked();
+
+    void FracSpinBox();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -93,9 +98,10 @@ private:
     QLineF *qlines;
     double maxmin;
     double remX, remY;
-    QPointF goodPoints[14];
-    int p=0,equals = 4;
+    QPointF goodPoints[14];     // Переписати під вектор
+    int p=0,equals = 7;         // 9 7
     imbaLayout** l;
+    QPlainTextEdit *txtEdit;
 
 };
 

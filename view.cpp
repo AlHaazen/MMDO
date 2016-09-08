@@ -11,8 +11,6 @@ View::View(QWidget *parent):QGraphicsView()
 {
 
     this->setParent(parent);
-    cout<<"Created\n";
-
 }
 
 View::~View()
@@ -31,9 +29,7 @@ void View::wheelEvent(QWheelEvent *e)
         e->accept();
     }
     else
-    {
         QGraphicsView::wheelEvent(e);
 
-    }
 
 }

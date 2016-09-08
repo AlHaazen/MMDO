@@ -4,16 +4,21 @@ imbaLayout::imbaLayout(int i)
 {
 
 
-    colorBtn = new QPushButton();
+   colorBtn = new QPushButton();
+
+//   QRect *rect = new QRect(0,0,25,25);
+//   QRegion *region = new QRegion(*rect, QRegion::Ellipse);
+
+//   colorBtn->setMask(*region);
 
    connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
 
    // colorBtn->connect(colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
 
 
-    spBox1 = new QSpinBox();
-    spBox2 = new QSpinBox();
-    spBox3 = new QSpinBox();
+    spBox1 = new QDoubleSpinBox();
+    spBox2 = new QDoubleSpinBox();
+    spBox3 = new QDoubleSpinBox();
 
     spBox1->setButtonSymbols(QAbstractSpinBox::NoButtons);
     spBox2->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -76,7 +81,7 @@ void imbaLayout::resize(int n)
 
     for(int i=0;i<n;i++)
     {
-        spBox[i] = new QSpinBox();
+        spBox[i] = new QDoubleSpinBox();
         spBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
         spBox[i]->setMinimum(-100);
 
@@ -102,9 +107,5 @@ void imbaLayout::getColor()
     colorBtn->update();
 
     emit colorChanged();
-
-    qDebug()<<s;
-
-    qDebug()<<"HELP Me";
 }
 

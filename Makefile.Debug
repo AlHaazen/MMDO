@@ -584,6 +584,7 @@ debug/moc_mainwindow.cpp: ../Qt/5.5/mingw492_32/include/QtWidgets/QMainWindow \
 		../Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		../Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../Qt/5.5/mingw492_32/include/QtCore/QDebug \
+		../Qt/5.5/mingw492_32/include/QtWidgets/QPlainTextEdit \
 		logic.h \
 		imba.h \
 		../Qt/5.5/mingw492_32/include/QtWidgets/QHBoxLayout \

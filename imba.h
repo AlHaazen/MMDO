@@ -19,12 +19,12 @@ public:
 
     void resize(int n);
 
-    QSpinBox *spBox1,*spBox2,*spBox3;
+    QDoubleSpinBox *spBox1,*spBox2,*spBox3;
     QRadioButton *rb1, *rb2;
     QButtonGroup *group;
     QLabel *l1, *l2, *l3;
 
-    QSpinBox **spBox = nullptr;
+    QDoubleSpinBox **spBox = nullptr;
     QLabel **label = nullptr;
 
     QPushButton *colorBtn;
@@ -36,7 +36,7 @@ public slots:
   void  getColor();
 
 signals:
-  colorChanged();
+  void colorChanged();
 
 
 
