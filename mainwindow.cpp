@@ -204,9 +204,11 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
                 continue;
 
             //точка попадирувала
-            goodPoints[p]=point;
-            p++;
+            goodPoints.push_back(point);
 
+
+            //єбу що, питай в Стеця...
+            //кажись, пошук графічного розв'язку..
             if(ui->radioButton_11->isChecked())
             {
                 if(ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y() > maxmin)
@@ -234,36 +236,24 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
             + " in x1 = " + QString::number(remX) + ", x2 = " + QString::number(remY);
     ui->label_16->setText(LabelText);
 
-    sort(goodPoints,p);
+    sort(goodPoints);
     QPainterPath path;
+
     path.moveTo(goodPoints[0].x()*10,goodPoints[0].y()*-10);
 
-    //    QPolygonF polygon;
-
-    //    for(int i=0;i<p;i++)
-    //    {
-    //        polygon<<QPointF(goodPoints[0].x()*10,goodPoints[0].y()*10);
-    //    }
-
-
-    //    QGraphicsPolygonItem *item = new QGraphicsPolygonItem();
-
-
-    //    item->setPolygon(polygon);
-
-    //    scene->addPolygon(polygon,QPen(Qt::red),QBrush(Qt::BDiagPattern));
-    //    scene->addPath(item->shape());
-
-    for(int i=0;i<p;i++)
+    for(auto point:goodPoints)
     {
-        goodPoints[i].setX(goodPoints[i].x()*10);
-        goodPoints[i].setY(goodPoints[i].y()*-10);
+        point.setX(point.x()*10);
+        point.setY(point.y()*-10);
 
-        path.lineTo(goodPoints[i]);
+        scene->addLine(point.x(),point.y(),point.x(),point.y(),QPen(QColor("red")));
+
+        path.lineTo(point);
     }
-    path.lineTo(goodPoints[0]);
+    //path.lineTo(goodPoints[0]);
     scene->addPath(path,QPen(Qt::black),QBrush(Qt::DiagCrossPattern));
-    p = 0;
+
+    goodPoints.clear();
 
     points.clear();
 }
@@ -311,90 +301,74 @@ void MainWindow::on_actionClose_triggered()//Close
     MainWindow::on_Clear_clicked();
 }
 
-void MainWindow::sort(QPointF *points, int n) //сортування точок і вимальовування одз
+void MainWindow::sort(vector<QPointF> &points) //сортування точок і вимальовування одз
 {
-    for(int i=0;i<n;i++)
-        cout<<points[i].x()<<' '<<points[i].y()<<endl;
 
-    cout<<endl;
-    int q=n-1;
+    vector<QPointF> res;
 
-    for(int i=0;i<n;i++)
-        if(points[i].x()==0 && points[i].y()==0)
-        {
-            double tmp=points[q].x();
-            points[q].setX(points[i].x());
-            points[i].setX(tmp);
+    int n = points.size();
 
-            tmp=points[q].y();
-            points[q].setY(points[i].y());
-            points[i].setY(tmp);
-            q--;
+    cout << endl;
 
-        }
+//    for(auto point:points)
+//        cout << point.x() << ' ' << point.y() << endl;
+//    cout << endl << endl;
 
-    for(int i=0;i<n;i++)
-        cout<<points[i].x()<<' '<<points[i].y()<<endl;
+    float xmax = INFINITY, ymax = 1e9;
+    int imax = 0;
 
-    cout<<endl;
+    for(int i=0; i<n; i++)
+        if(points[i].y() < ymax)
+            imax = i,ymax = points[i].y();
 
-    float r=0,f;
-    int imax=-1;
-    for(int i=0;i<n;i++)
+    double tmp = points[imax].x();
+    points[imax].rx() = points[0].x();
+    points[0].rx() = tmp;
+
+    tmp = points[imax].y();
+    points[imax].ry() = points[0].y();
+    points[0].ry() = tmp;
+
+    //Перша точка найлівіша і найнижча
+
+    std::sort(points.begin()+1,points.end(),[](QPointF p1, QPointF p2)
     {
-        f=0;
-        for(int j=i;j<n;j++)
-        {
-            if(f<(atan2(points[j].y(), points[j].x())))
-            {
-                imax=j;
-                r = sqrt(points[j].x()*points[j].x() + points[j].y()*points[j].y());
-                f = (atan2(points[j].y(), points[j].x()));
-            }
+        return atan2(p1.y(),p1.x()) < atan2(p2.y(),p2.x());
+    });
 
-        }
-        // cout<<f<<endl;
-
-        double tmp=points[imax].x();
-        points[imax].setX(points[i].x());
-        points[i].setX(tmp);
-
-        tmp=points[imax].y();
-        points[imax].setY(points[i].y());
-        points[i].setY(tmp);
-    }
-
-    cout<<endl;
-
-    for(int i=0;i<n-1;i++)
+    //підчищаємо
+    for(int i=0; i<n; i++)
     {
-        if(points[i].x()==0 && points[i+1].x()==0)
-            if(points[i].y() > points[i+1].y())
-            {
-                double tmp=points[i].x();
-                points[i].setX(points[i+1].x());
-                points[1+i].setX(tmp);
-
-                tmp=points[i].y();
-                points[i].setY(points[i+1].y());
-                points[i+1].setY(tmp);
-            }
-        if(points[i].y()==0 && points[i+1].y()==0)
-            if(points[i].x() < points[i+1].x())
-            {
-                double tmp=points[i].x();
-                points[i].setX(points[i+1].x());
-                points[1+i].setX(tmp);
-
-                tmp=points[i].y();
-                points[i].setY(points[i+1].y());
-                points[i+1].setY(tmp);
-            }
+        if(points[i] == points[i+1])
+            points.erase(points.begin()+i),n--,i--;
 
     }
+    n = points.size();
 
-    for(int i=0;i<n;i++)
-        cout<<points[i].x()<<' '<<points[i].y()<<endl;
+
+    for(auto point:points)
+        cout << point.x() << ' ' << point.y() << endl;
+    cout << endl << endl;
+
+    auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
+    {
+      return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
+    };
+
+    int m = 2;
+
+    res.push_back(points[0]);
+    res.push_back(points[1]);
+
+    for(int i=2; i<n; i++)
+    {
+        while( ccw(res[m-1], res[m], points[i])<0)
+            res.pop_back(),m--;
+        res.push_back(points[i]);
+    }
+
+    points = res;
+
 }
 
 void MainWindow::on_Equals_valueChanged(int arg1)
@@ -1161,8 +1135,8 @@ void MainWindow::on_DualSimplex_clicked()
 void MainWindow::on_Clear_clicked()
 {
     scene->clear();
-    scene->addLine(500, 0, -500, 0);
-    scene->addLine(0, -500, 0, 500);
+    scene->addLine(500, 0, -500, 0,QPen(QColor("blue")));
+    scene->addLine(0, -500, 0, 500,QPen(QColor("blue")));
     ui->label_16->clear();
 
 }

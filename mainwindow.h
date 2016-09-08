@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
+#include <algorithm>
 
 #include <logic.h>
 #include <imba.h>
@@ -60,7 +61,7 @@ private slots:
 
     void on_actionClose_triggered();
 
-    void sort(QPointF *points, int n);
+    void sort(vector<QPointF> &points);
 
     void on_Equals_valueChanged(int arg1);
 
@@ -100,7 +101,7 @@ private:
     QLineF *qlines;
     double maxmin;
     double remX, remY;
-    QPointF goodPoints[14];     // Переписати під вектор
+    vector<QPointF> goodPoints;
     int p=0,equals = 9;         // 9 7
     imbaLayout** l;
     QPlainTextEdit *txtEdit;
