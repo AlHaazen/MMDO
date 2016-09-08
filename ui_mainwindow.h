@@ -299,7 +299,7 @@ public:
         Equals->setObjectName(QStringLiteral("Equals"));
         Equals->setButtonSymbols(QAbstractSpinBox::NoButtons);
         Equals->setMaximum(10);
-        Equals->setValue(7);
+        Equals->setValue(9);
 
         horizontalLayout_4->addWidget(Equals);
 

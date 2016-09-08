@@ -86,6 +86,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void normalizeInput();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
@@ -99,7 +101,7 @@ private:
     double maxmin;
     double remX, remY;
     QPointF goodPoints[14];     // Переписати під вектор
-    int p=0,equals = 7;         // 9 7
+    int p=0,equals = 9;         // 9 7
     imbaLayout** l;
     QPlainTextEdit *txtEdit;
 

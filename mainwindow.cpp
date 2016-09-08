@@ -37,24 +37,24 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
 
-//    l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
-//    l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
-//    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
-//    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
-//    l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
-//    l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
-//    l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
-//    l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
-//    l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
-
-
     l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
-    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
     l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
-    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(2);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
-    l[4]->spBox1->setValue(0);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(8);
-    l[5]->spBox1->setValue(-4);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-48);
-    l[6]->spBox1->setValue(-1);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-6);
+    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
+    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
+    l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
+    l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
+    l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
+    l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
+    l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
+
+
+//    l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
+//    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
+//    l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
+//    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(2);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
+//    l[4]->spBox1->setValue(0);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(8);
+//    l[5]->spBox1->setValue(-4);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-48);
+//    l[6]->spBox1->setValue(-1);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-6);
 
 
 
@@ -698,6 +698,9 @@ QString MainWindow::formOutput(vector<vector<double> > &matrix, vector<double> &
 
 void MainWindow::on_Simplex_clicked()
 {
+
+    normalizeInput();
+
     //створили матрцю
     vector< vector<double> > matrix;
     matrix.resize(equals);
@@ -732,9 +735,14 @@ void MainWindow::on_Simplex_clicked()
     // розширили для вільних членів 8==D
     for(int i = 0; i < matrix.size(); i++)
         matrix[i].resize(matrix[i].size() + 1);
+
     // загнали вільні члени
     for(int i = 0; i < matrix.size(); i++)
         matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
+
+/// Як виявилося, вектор В має містити тільки додатні значення
+/// І, здається тепер це вилізло боком, треба розгрібати
+
     // вивід для дебагу
     for(unsigned i = 0; i < matrix.size(); i++)
     {
@@ -756,15 +764,16 @@ void MainWindow::on_Simplex_clicked()
         //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
     }
 
-    cout << endl;
-    for(unsigned i = 0; i < value.size(); i++)
-        cout << value[i] << ' ';
-
-    cout << endl;
     /// Змінити
     ///
     value[0] = ui->spinBox_2->value();
     value[1] = ui->spinBox->value();
+
+    cout << endl;
+    for(unsigned i = 0; i < value.size(); i++)
+        cout << value[i] << ' ';
+    cout << endl;
+
 
     if(ui->radioButton_12->isChecked())
     {
@@ -780,7 +789,7 @@ void MainWindow::on_Simplex_clicked()
     int validatei, validatej = 0;
     while(validatej != -1)
     {
-        cout<<"Here\n";
+
         vector<double> simplex;
         simplex.resize(matrix[0].size(),0);
 
@@ -1198,4 +1207,22 @@ void MainWindow::on_pushButton_clicked()
 
 //    scene->addEllipse(item);
 
+}
+
+void MainWindow::normalizeInput()
+{
+    for(int i=0; i<equals; i++)
+    {
+        if(l[i]->spBox3->value()<0)
+        {
+            l[i]->spBox1->setValue(-1 * l[i]->spBox1->value());
+            l[i]->spBox2->setValue(-1 * l[i]->spBox2->value());
+            l[i]->spBox3->setValue(-1 * l[i]->spBox3->value());
+
+            l[i]->rb1->setChecked(!l[i]->rb1->isChecked());
+            l[i]->rb2->setChecked(!l[i]->rb2->isChecked());
+
+
+        }
+    }
 }
