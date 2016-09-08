@@ -93,16 +93,14 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
 
-    LINE line[6];
     LINE *lines;
     LINE staticLines[2];
 
-    QLineF qline[4];
     QLineF *qlines;
     double maxmin;
     double remX, remY;
     vector<QPointF> goodPoints;
-    int p=0,equals = 9;         // 9 7
+    int equals = 9;         // 9 7
     imbaLayout** l;
     QPlainTextEdit *txtEdit;
 

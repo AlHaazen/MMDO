@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    cout<<(0==0.0);
 
     // Х>0 and Y>0
     staticLines[0].a = 0;  staticLines[0].b = 1;  staticLines[0].c = 0;
@@ -308,15 +307,10 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
 
     int n = points.size();
 
-    cout << endl;
-
-//    for(auto point:points)
-//        cout << point.x() << ' ' << point.y() << endl;
-//    cout << endl << endl;
-
     float xmax = INFINITY, ymax = 1e9;
     int imax = 0;
 
+    // Шукаємо найнижчу і найлівішу точку
     for(int i=0; i<n; i++)
         if(points[i].y() < ymax)
             imax = i,ymax = points[i].y();
@@ -329,14 +323,16 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
     points[imax].ry() = points[0].y();
     points[0].ry() = tmp;
 
-    //Перша точка найлівіша і найнижча
+    // Перша точка найлівіша і найнижча
 
+
+    // Сортіруємо по кутах
     std::sort(points.begin()+1,points.end(),[](QPointF p1, QPointF p2)
     {
         return atan2(p1.y(),p1.x()) < atan2(p2.y(),p2.x());
     });
 
-    //підчищаємо
+    //підчищаємо повтори
     for(int i=0; i<n; i++)
     {
         if(points[i] == points[i+1])
@@ -345,16 +341,12 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
     }
     n = points.size();
 
-
-    for(auto point:points)
-        cout << point.x() << ' ' << point.y() << endl;
-    cout << endl << endl;
-
     auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
     {
       return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
     };
 
+    // і єбашимо алгоритм Грехема
     int m = 2;
 
     res.push_back(points[0]);
