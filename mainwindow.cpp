@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(scene);
     ui->centralWidget->setLayout(ui->horizontalLayout);
 
-    l = new imbaLayout* [ui->Equals->value()];
+    l.resize(ui->Equals->value());
 
     for(int i=0;i<ui->Equals->value();i++)
     {
@@ -275,9 +275,9 @@ void MainWindow::on_actionAbout_2_triggered()//про qt
 void MainWindow::on_action_2_triggered()//про мене
 {
     QMessageBox::about(this, tr("Про програму"),
-                       tr("Ультимативна програма для лабораторних робіт з ММДО\n"
+                       tr("Ультимативна програма для лабораторних робіт з ММДО та МС\n"
                           "Автори:\n"
-                          "Студенти груп КН-20 та КН-21, Волошин Іван та Стецик Юрій") );
+                          "Волошин Іван та Стецик Юрій") );
 }
 
 void MainWindow::on_actionBuild_triggered()//Build
@@ -302,7 +302,6 @@ void MainWindow::on_actionClose_triggered()//Close
 
 void MainWindow::sort(vector<QPointF> &points) //сортування точок і вимальовування одз
 {
-
     vector<QPointF> res;
 
     int n = points.size();
@@ -365,27 +364,31 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
 
 void MainWindow::on_Equals_valueChanged(int arg1)
 {
-    for(int i=0;i<equals;i++)
+
+    if(ui->Equals->value() > equals)
+    {
+        l.resize(ui->Equals->value());
+        for(int i=equals; i< ui->Equals->value(); i++)
+        {
+            l[i] = new imbaLayout(i+1);
+            connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
+            ui->verticalLayout->insertLayout(1+i,l[i]);
+        }
+    }
+    else
     {
 
-        ui->verticalLayout->removeItem(l[i]);
-        delete l[i];
+        for(int i=equals-1; i>=ui->Equals->value();i--)
+        {
+            ui->verticalLayout->removeItem(l[i]);
+            delete l[i];
+            l.pop_back();
+        }
     }
-    this->update();
 
-    delete[] l;
-
-
-    l = new imbaLayout* [ui->Equals->value()];
-
-    for(int i=0;i<ui->Equals->value();i++)
-    {
-        l[i] = new imbaLayout(i+1);
-        ui->verticalLayout->insertLayout(1+i,l[i]);
-    }
     equals = ui->Equals->value();
 
-
+    this->update();
 
     delete lines;
     delete qlines;
