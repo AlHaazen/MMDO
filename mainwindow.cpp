@@ -26,26 +26,39 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(scene);
     ui->centralWidget->setLayout(ui->horizontalLayout);
 
-    l.resize(ui->Equals->value());
-
-    for(int i=0;i<ui->Equals->value();i++)
-    {
-        l[i] = new imbaLayout(i+1);
-        connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
-        ui->verticalLayout->insertLayout(1+i,l[i]);
-    }
 
 
-    l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
-    l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
-    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
-    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
-    l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
-    l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
-    l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
-    l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
-    l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
+        ui->Equals->setValue(9);
 
+        l.resize(ui->Equals->value());
+        for(int i=0;i<ui->Equals->value();i++)
+        {
+            l[i] = new imbaLayout(i+1);
+            connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
+            ui->verticalLayout->insertLayout(1+i,l[i]);
+        }
+
+        l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
+        l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
+        l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
+        l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
+        l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
+        l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
+        l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
+        l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
+        l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
+
+
+
+//    ui->Equals->setValue(7);
+
+//    l.resize(ui->Equals->value());
+//    for(int i=0;i<ui->Equals->value();i++)
+//    {
+//        l[i] = new imbaLayout(i+1);
+//        connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
+//        ui->verticalLayout->insertLayout(1+i,l[i]);
+//    }
 
 //    l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
 //    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
@@ -302,61 +315,45 @@ void MainWindow::on_actionClose_triggered()//Close
 
 void MainWindow::sort(vector<QPointF> &points) //сортування точок і вимальовування одз
 {
-    vector<QPointF> res;
-
-    int n = points.size();
-
-    float xmax = INFINITY, ymax = 1e9;
-    int imax = 0;
-
-    // Шукаємо найнижчу і найлівішу точку
-    for(int i=0; i<n; i++)
-        if(points[i].y() < ymax)
-            imax = i,ymax = points[i].y();
-
-    double tmp = points[imax].x();
-    points[imax].rx() = points[0].x();
-    points[0].rx() = tmp;
-
-    tmp = points[imax].y();
-    points[imax].ry() = points[0].y();
-    points[0].ry() = tmp;
-
-    // Перша точка найлівіша і найнижча
-
-
-    // Сортіруємо по кутах
-    std::sort(points.begin()+1,points.end(),[](QPointF p1, QPointF p2)
-    {
-        return atan2(p1.y(),p1.x()) < atan2(p2.y(),p2.x());
-    });
-
-    //підчищаємо повтори
-    for(int i=0; i<n; i++)
-    {
-        if(points[i] == points[i+1])
-            points.erase(points.begin()+i),n--,i--;
-
-    }
-    n = points.size();
 
     auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
     {
-      return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
+        return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
     };
 
-    // і єбашимо алгоритм Грехема
-    int m = 2;
+    vector<QPointF> res;
 
-    res.push_back(points[0]);
-    res.push_back(points[1]);
-
-    for(int i=2; i<n; i++)
+    double max = 0, min = 1e9;
+    QPointF pMax,pMin;
+    //Пошук лівої і правої
+    for(auto point:points)
     {
-        while( ccw(res[m-1], res[m], points[i])<0)
-            res.pop_back(),m--;
-        res.push_back(points[i]);
+        if(point.x() > max)
+            pMax = point, max = point.x();
+        if(point.x() < min)
+            pMin = point, min = point.x();
     }
+
+    //Сортування туди-сюди
+    vector<QPointF> upper, lower;
+    for(auto point:points)
+    {
+        if(point == pMax || point == pMin)
+            continue;
+        if(ccw(pMin,point,pMax)>=0)
+            upper.push_back(point);
+        else
+            lower.push_back(point);
+    }
+
+
+ /*   std::function<void (vector<QPointF>, QPointF, QPointF)> */
+
+
+    res.push_back(pMin);
+    QuickHull(upper, pMin,pMax,res);
+    res.push_back(pMax);
+    QuickHull(lower,pMax,pMin,res);
 
     points = res;
 
@@ -527,37 +524,21 @@ void MainWindow::on_FractLinear_clicked()
         vector<double> multi;
         multi.resize(matrix.size(),0);
 
-        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+        result = FormSimlexRow(matrix, value, simplex,multi);
 
         stringResult += formOutput(matrix,multi,value,simplex);
         stringResult +="\n\n\n";
 
-
-        //        cout<<endl;
-        //        for(int i=0;i<simplex.size();i++)
-        //            cout<<simplex.at(i)<<' ';
-
-        for(unsigned i = 0; i < matrix.size(); i++)
-        {
-            for(unsigned j = 0; j < matrix[0].size(); j++)
-                cout << matrix[i][j] << '\t';
-            cout << endl;
-        }
-
-
-
-        cout<<endl;
-
-        validatej = ValidateSimplexRow(&simplex);
+        validatej = ValidateSimplexRow(simplex);
         if(validatej != -1)
         {
             validatei = MinimalGRZero(validatej, matrix);
             if(validatei == -1)
-	    {
-		printf("Не сумісна матриця");
-		break;
-	    }
-            MakeVector(validatei, validatej,&matrix);
+            {
+                printf("Не сумісна матриця");
+                break;
+            }
+            MakeVector(validatei, validatej,matrix);
         }
     }
 
@@ -709,8 +690,8 @@ void MainWindow::on_Simplex_clicked()
     for(int i = 0; i < matrix.size(); i++)
         matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
 
-/// Як виявилося, вектор В має містити тільки додатні значення
-/// І, здається тепер це вилізло боком, треба розгрібати
+    /// Як виявилося, вектор В має містити тільки додатні значення
+    /// І, здається тепер це вилізло боком, треба розгрібати
 
     // вивід для дебагу
     for(unsigned i = 0; i < matrix.size(); i++)
@@ -765,24 +746,19 @@ void MainWindow::on_Simplex_clicked()
         vector<double> multi;
         multi.resize(matrix.size(),0);
 
-        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+        result = FormSimlexRow(matrix, value, simplex,multi);
 
         stringResult += formOutput(matrix,multi,value,simplex);
         stringResult +="\n\n\n";
 
-
-        for(int i=0;i<simplex.size();i++)
-            cout<<simplex.at(i)<<' ';
-
-        cout<<endl;
-        validatej = ValidateSimplexRow(&simplex);
+        validatej = ValidateSimplexRow(simplex);
 
         if(validatej != -1)
         {
             validatei = MinimalGRZero(validatej, matrix);
             if(validatei == -1)
                 printf("Не сумісна матриця");
-            MakeVector(validatei, validatej,&matrix);
+            MakeVector(validatei, validatej,matrix);
         }
     }
 
@@ -855,16 +831,16 @@ void MainWindow::on_IntLinear_clicked()
             value[2 + matrix.size() + j++] = -1000000000000;// 2(кількість норм змінних)
         //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
     }
+    /// Змінити
+    ///
+    value[0] = ui->spinBox_2->value();
+    value[1] = ui->spinBox->value();
 
     cout << endl;
     for(unsigned i = 0; i < value.size(); i++)
         cout << value[i] << ' ';
 
     cout << endl;
-    /// Змінити
-    ///
-    value[0] = ui->spinBox_2->value();
-    value[1] = ui->spinBox->value();
 
     if(ui->radioButton_12->isChecked())
     {
@@ -886,28 +862,23 @@ void MainWindow::on_IntLinear_clicked()
 
         vector<double> multi;
         multi.resize(matrix.size(),0);
-        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+        result = FormSimlexRow(matrix, value, simplex,multi);
 
 
         stringResult += formOutput(matrix,multi,value,simplex);
         stringResult +="\n\n\n";
 
 
-        validatej = ValidateSimplexRow(&simplex);
+        validatej = ValidateSimplexRow(simplex);
         if(validatej != -1)
         {
             validatei = MinimalGRZero(validatej, matrix);
             if(validatei == -1)
                 printf("Не сумісна матриця");
-            MakeVector(validatei, validatej,&matrix);
+            MakeVector(validatei, validatej,matrix);
         }
 
     }
-
-
-    cout<<endl;
-    for(int i=0;i<simplex.size();i++)
-        cout<<simplex.at(i)<<' ';
 
     ///Початок ЦЧЛП
     ///
@@ -979,15 +950,6 @@ void MainWindow::on_IntLinear_clicked()
         for(int i=0;i<matrix.size();i++)
             matrix.at(i).at(matrix.at(0).size()-1)=tmp[i];
 
-        //        cout<<endl<<endl;
-
-        //        for(int i=0;i<matrix.size();i++)
-        //        {
-        //            for(int j=0;j<matrix.at(0).size();j++)
-        //                cout<<matrix[i][j]<<'\t';
-        //            cout<<endl;
-        //        }
-
         double jmin=-1;
         double min=INFINITY;
         if(imax != -1)
@@ -1004,9 +966,7 @@ void MainWindow::on_IntLinear_clicked()
 
         imax = matrix.size()-1;
 
-        //        cout<<endl<<jmin<<' '<<imax<<endl;
-
-        MakeVector(imax,jmin,&matrix);
+        MakeVector(imax,jmin,matrix);
         simplex.clear();
         simplex.resize(matrix[0].size(),0);
         vector<double> multi;
@@ -1014,7 +974,7 @@ void MainWindow::on_IntLinear_clicked()
 
         value.resize(value.size()+1);
 
-        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+        result = FormSimlexRow(matrix, value, simplex,multi);
 
         stringResult += formOutput(matrix,multi,value,simplex);
     }
@@ -1105,19 +1065,19 @@ void MainWindow::on_DualSimplex_clicked()
         vector<double> multi;
         multi.resize(equals,0);
 
-        result = FormSimlexRow(&matrix, &value, &simplex,&multi);
+        result = FormSimlexRow(matrix, value, simplex,multi);
 
         stringResult += formOutput(matrix,multi,value,simplex);
         stringResult +="\n\n\n";
 
 
-        validatej = ValidateSimplexRow(&simplex);
+        validatej = ValidateSimplexRow(simplex);
         if(validatej != -1)
         {
             validatei = MinimalGRZero(validatej, matrix);
             if(validatei == -1)
                 printf("Не сумісна матриця");
-            MakeVector(validatei, validatej,&matrix);
+            MakeVector(validatei, validatej,matrix);
         }
     }
 
@@ -1145,36 +1105,36 @@ void MainWindow::on_Close_clicked()
 void MainWindow::on_pushButton_clicked()
 {
 
-//    on_Clear_clicked();
+    //    on_Clear_clicked();
 
-//    ellipse el(-6,-9,2,4,1,1);
-//    vector<equation*> equ;
-//    equ.push_back(new equation(2,3,6));
-//    equ.push_back(new equation(-1,-1,-7));
-//    equ.push_back(new equation(-11,-5,-55));
-//    equ.push_back(new equation(0,1,0));//y>=0
-//    equ.push_back(new equation(1,0,0));//x>=0
+    //    ellipse el(-6,-9,2,4,1,1);
+    //    vector<equation*> equ;
+    //    equ.push_back(new equation(2,3,6));
+    //    equ.push_back(new equation(-1,-1,-7));
+    //    equ.push_back(new equation(-11,-5,-55));
+    //    equ.push_back(new equation(0,1,0));//y>=0
+    //    equ.push_back(new equation(1,0,0));//x>=0
 
-//    plots plot(&equ, &el);
+    //    plots plot(&equ, &el);
 
-//    vector<point *> *maxMin = plot.getMaxMin();
-//    point *min = maxMin->at(1), *max = maxMin->at(0);
+    //    vector<point *> *maxMin = plot.getMaxMin();
+    //    point *min = maxMin->at(1), *max = maxMin->at(0);
 
-//    double h = el.function(min);
-//sad
-//  0w   QLine *line = new QLine();
+    //    double h = el.function(min);
+    //sad
+    //  0w   QLine *line = new QLine();
 
-//    LINE mLine;
-//    mLine.a=2;
-//    mLine.b=3;
-//    mLine.c=6;
-//    build_line(mLine,line);
-//    scene->addLine(line);
+    //    LINE mLine;
+    //    mLine.a=2;
+    //    mLine.b=3;
+    //    mLine.c=6;
+    //    build_line(mLine,line);
+    //    scene->addLine(line);
 
-////    QGraphicsEllipseItem item;
-////    item.setRect();
+    ////    QGraphicsEllipseItem item;
+    ////    item.setRect();
 
-//    scene->addEllipse(item);
+    //    scene->addEllipse(item);
 
 }
 

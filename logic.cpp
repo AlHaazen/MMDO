@@ -1,33 +1,33 @@
 #include "logic.h"
 
 
-void MakeVector(int m, int n, vector<vector<double> > *matrix)
+void MakeVector(int m, int n, vector<vector<double> > &matrix)
 {
 
     int i, j;
-    int row = (*matrix).size(), col = (*matrix)[0].size();
+    int row = matrix.size(), col = matrix[0].size();
 
-    if((*matrix)[m][n] == 0)
+    if(matrix[m][n] == 0)
     {
         for(i = 0; i < row; i++)
-            if((*matrix)[i][n] != 0)
+            if(matrix[i][n] != 0)
                 break;
         if(i == row+1)
             return;
         for(j = 0; j <col; j++)
-            (*matrix)[m][j] += (*matrix)[i][j];
+            matrix[m][j] += matrix[i][j];
     }
 
-    double a = (*matrix)[m][n];
+    double a = matrix[m][n];
     for(j = 0; j < col; j++)
-        (*matrix)[m][j] /= a;
+        matrix[m][j] /= a;
     for(i = 0; i < row; i++)
     {
         if(i == m)
             continue;
-        a = (*matrix)[i][n];
+        a = matrix[i][n];
         for(j = 0; j <col; j++)
-            (*matrix)[i][j] -= a*(*matrix)[m][j];
+            matrix[i][j] -= a*matrix[m][j];
     }
 }
 
@@ -47,38 +47,33 @@ void MatrixOut(vector<vector<double> > *matrix)
     //        printf("\n");
 }
 
-double FormSimlexRow(vector<vector<double> > *matrix, vector<double> *value, vector<double> *simplex, vector<double> *multi)
+double FormSimlexRow(vector<vector<double> > &matrix, vector<double> &value, vector<double> &simplex, vector<double> &multi)
 {
-    int row = (*matrix).size(), col =  (*matrix)[0].size();
+    int row = matrix.size(), col =  matrix[0].size();
 
     double mult[row];
     int i, j, k;
     double result = 0;
     for(j = 0; j < col-1; j++)
     {
-        if((k = oVector(*matrix, j)) != -1)
+        if((k = oVector(matrix, j)) != -1)
         {
-            mult[k] = value->at(j);
-            multi->at(k)=mult[k];
+            mult[k] = value.at(j);
+            multi.at(k)=mult[k];
         }
     }
-
-
 
     for(j = 0; j <col; j++)
     {
         for(i = 0; i < row; i++)
-        {
-            simplex->at(j) += mult[i]*(*matrix)[i][j];
-            //cout<<"simplex at "<<j<<' '<< simplex->at(j) << ' '<< mult[i]<<' '<< (*matrix)[i][j]<<endl;
-        }
-        simplex->at(j) -= value->at(j);
+            simplex.at(j) += mult[i]*matrix[i][j];
+        simplex.at(j) -= value.at(j);
     }
 
     for(i = 0; i < row; i++)
-        result += mult[i]*(*matrix)[i][col-1];
+        result += mult[i]*matrix[i][col-1];
 
-    simplex->at(simplex->size()-1) = result;
+    simplex.at(simplex.size()-1) = result;
     return result;
 }
 
@@ -100,7 +95,7 @@ int  oVector(vector<vector<double> > matrix, int n)
         return -1;
 }
 
-int ValidateSimplexRow(vector<double> *simplex)
+int ValidateSimplexRow(vector<double> &simplex)
 {
     /// op
     /// 1 = min, -1 - max
@@ -109,22 +104,12 @@ int ValidateSimplexRow(vector<double> *simplex)
 
     double min = INFINITY;
 
-    for(j = 0; j <simplex->size()-1; j++)
-        if(simplex->at(j) < 0)
+    for(j = 0; j <simplex.size()-1; j++)
+        if(simplex.at(j) < 0)
         {
-            //            if(op)
-            //            {
-            //                if(min < simplex->at(j))
-            //                {
-            //                    min = simplex->at(j);
-            //                    r = j;
-            //                }
-            //            }
-
-            //            else
-            if(min > simplex->at(j))
+            if(min > simplex.at(j))
             {
-                min = simplex->at(j);
+                min = simplex.at(j);
                 r = j;
             }
 
