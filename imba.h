@@ -7,6 +7,10 @@
 #include <QtWidgets>
 #include <QObject>
 
+#include <vector>
+
+using namespace std;
+
 
 class imbaLayout : public QHBoxLayout
 {
@@ -19,17 +23,16 @@ public:
 
     void resize(int n);
 
-    QDoubleSpinBox *spBox1,*spBox2,*spBox3;
     QRadioButton *rb1, *rb2;
     QButtonGroup *group;
-    QLabel *l1, *l2, *l3;
-
-    QDoubleSpinBox **spBox = nullptr;
-    QLabel **label = nullptr;
 
     QPushButton *colorBtn;
 
     QColor color;
+
+    vector<QDoubleSpinBox*> spBox;
+    vector<QLabel*> label;
+
 
     int N = 2;
 public slots:

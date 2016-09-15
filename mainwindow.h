@@ -149,6 +149,7 @@ private:
     double remX, remY;
     vector<QPointF> goodPoints;
     int equals = 9;         // 9 7
+    int values = 2;
     vector<imbaLayout*> l;
     QPlainTextEdit *txtEdit;
 

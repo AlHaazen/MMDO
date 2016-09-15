@@ -20,56 +20,30 @@ MainWindow::MainWindow(QWidget *parent) :
     lines = new LINE[equals];
     qlines = new QLineF[equals];
 
-
     ui->setupUi(this);
     scene = new QGraphicsScene;
     ui->graphicsView->setScene(scene);
     ui->centralWidget->setLayout(ui->horizontalLayout);
 
+    ui->Equals->setValue(9);
 
-
-        ui->Equals->setValue(9);
-
-        l.resize(ui->Equals->value());
-        for(int i=0;i<ui->Equals->value();i++)
-        {
-            l[i] = new imbaLayout(i+1);
-            connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
-            ui->verticalLayout->insertLayout(1+i,l[i]);
-        }
-
-        l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
-        l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
-        l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
-        l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
-        l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
-        l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
-        l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
-        l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
-        l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
-
-
-
-//    ui->Equals->setValue(7);
-
-//    l.resize(ui->Equals->value());
-//    for(int i=0;i<ui->Equals->value();i++)
-//    {
-//        l[i] = new imbaLayout(i+1);
-//        connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
-//        ui->verticalLayout->insertLayout(1+i,l[i]);
-//    }
+    l.resize(ui->Equals->value());
+    for(int i=0;i<ui->Equals->value();i++)
+    {
+        l[i] = new imbaLayout(i+1);
+        connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
+        ui->verticalLayout->insertLayout(1+i,l[i]);
+    }
 
 //    l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
-//    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
 //    l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
-//    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(2);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
-//    l[4]->spBox1->setValue(0);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(8);
-//    l[5]->spBox1->setValue(-4);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-48);
-//    l[6]->spBox1->setValue(-1);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-6);
-
-
-
+//    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
+//    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
+//    l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
+//    l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
+//    l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
+//    l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
+//    l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
 
     txtEdit = new QPlainTextEdit();
 
@@ -95,9 +69,9 @@ void MainWindow::on_pushButton_2_clicked()//Build
 
     for(int i=0;i<equals;i++)
     {
-        lines[i].a = l[i]->spBox1->value();
-        lines[i].b = l[i]->spBox2->value();
-        lines[i].c = l[i]->spBox3->value();
+        lines[i].a = l[i]->spBox[0]->value();
+        lines[i].b = l[i]->spBox[1]->value();
+        lines[i].c = l[i]->spBox[2]->value();
         build_line(lines[i], &qlines[i]);
         scene->addLine(qlines[i],QPen(l[i]->color));
     }
@@ -347,7 +321,7 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
     }
 
 
- /*   std::function<void (vector<QPointF>, QPointF, QPointF)> */
+    /*   std::function<void (vector<QPointF>, QPointF, QPointF)> */
 
 
     res.push_back(pMin);
@@ -398,8 +372,8 @@ bool MainWindow::checkPoint(QPointF point)
 {
     for(int i=0;i<ui->Equals->value();i++)
     {
-        double left =point.x()* l[i]->spBox1->value()   +  point.y()* l[i]->spBox2->value();
-        double r = l[i]->spBox3->value();
+        double left =point.x()* l[i]->spBox[0]->value()   +  point.y()* l[i]->spBox[1]->value();
+        double r = l[i]->spBox[2]->value();
         if( left <r && l[i]->rb1->isChecked() || left >r && l[i]->rb2->isChecked())
             return false;
     }
@@ -411,7 +385,7 @@ void MainWindow::on_Variables_editingFinished()
 {
 
 }
-
+/*
 void MainWindow::on_FractLinear_clicked()
 {
     if(ui->checkBox->isChecked() == false)
@@ -421,26 +395,26 @@ void MainWindow::on_FractLinear_clicked()
     vector< vector<double> > matrix;
     matrix.resize(equals);
     for(int i = 0; i < equals; i++)
-        matrix[i].resize(2 + equals + 1);
+        matrix[i].resize(values + equals + 1);
 
     //Проініціалізуємо масив 0
     for(int i = 0; i < equals; i++)
-        for(int j = 0; j < 2+equals + 1; j++)
+        for(int j = 0; j < values +equals + 1; j++)
             matrix[i][j]=0;
 
     //Запишемо х3 - на самом деле у0
 
     for(int i=0; i<equals; i++)
-    {
-        matrix[i][0] = -l[i]->spBox3->value();
-    }
+        matrix[i][0] = -l[i]->spBox[values]->value();
 
 
-    // записали Х1 та Х2
+
+    // записали Х1 та Х2 ...
     for(int i = 0; i < equals; i++)
     {
-        matrix[i][1]=l[i]->spBox1->value();
-        matrix[i][2]=l[i]->spBox2->value();
+        for(int j=0; j<values; j++)
+        matrix[i][j]=l[i]->spBox[j]->value();
+        matrix[i][j]=l[i]->spBox[j]->value();
     }
 
     for(int i=0;i<equals;i++)
@@ -582,7 +556,7 @@ void MainWindow::on_FractLinear_clicked()
     txtEdit->show();
 
 }
-
+*/
 void MainWindow::FracSpinBox()
 {
     ui->spinBox_3->setVisible(ui->checkBox->isChecked());
@@ -655,19 +629,12 @@ void MainWindow::on_Simplex_clicked()
     vector< vector<double> > matrix;
     matrix.resize(equals);
     for(int i = 0; i < equals; i++)
-        matrix[i].resize(2 + equals);
-
-    //Проініціалізуємо масив 0
-    for(int i = 0; i < equals; i++)
-        for(int j = 0; j < 2+equals; j++)
-            matrix[i][j]=0;
+        matrix[i].resize(values + equals,0);
 
     // записали Х1 та Х2
     for(int i = 0; i < equals; i++)
-    {
-        matrix[i][0]=l[i]->spBox1->value();
-        matrix[i][1]=l[i]->spBox2->value();
-    }
+        for(int j=0; j<values; j++)
+            matrix[i][j]=l[i]->spBox[j]->value();
 
     // Записали додаткові змінні
     for(int i = 0; i < matrix.size(); i++)
@@ -688,7 +655,7 @@ void MainWindow::on_Simplex_clicked()
 
     // загнали вільні члени
     for(int i = 0; i < matrix.size(); i++)
-        matrix[i][matrix[0].size()-1] = l[i]->spBox3->value();
+        matrix[i][matrix[0].size()-1] = l[i]->spBox[N]->value();
 
     /// Як виявилося, вектор В має містити тільки додатні значення
     /// І, здається тепер це вилізло боком, треба розгрібати
@@ -768,7 +735,7 @@ void MainWindow::on_Simplex_clicked()
     txtEdit->setMinimumSize((int)txtEdit->document()->size().width(),(int)txtEdit->document()->size().height());
     txtEdit->show();
 }
-
+/*
 void MainWindow::on_IntLinear_clicked()
 {
     //створили матрцю
@@ -1086,7 +1053,7 @@ void MainWindow::on_DualSimplex_clicked()
     txtEdit->show();
 
 }
-
+*/
 void MainWindow::on_Clear_clicked()
 {
     scene->clear();
@@ -1142,15 +1109,13 @@ void MainWindow::normalizeInput()
 {
     for(int i=0; i<equals; i++)
     {
-        if(l[i]->spBox3->value()<0)
+        if(l[i]->spBox[N]->value()<0)
         {
-            l[i]->spBox1->setValue(-1 * l[i]->spBox1->value());
-            l[i]->spBox2->setValue(-1 * l[i]->spBox2->value());
-            l[i]->spBox3->setValue(-1 * l[i]->spBox3->value());
+            for(auto x:l[i]->spBox)
+                x->setValue(x->value() * -1);
 
             l[i]->rb1->setChecked(!l[i]->rb1->isChecked());
             l[i]->rb2->setChecked(!l[i]->rb2->isChecked());
-
 
         }
     }

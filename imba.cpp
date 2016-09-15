@@ -2,32 +2,22 @@
 
 imbaLayout::imbaLayout(int i)
 {
-
-
    colorBtn = new QPushButton();
 
 //   QRect *rect = new QRect(0,0,25,25);
 //   QRegion *region = new QRegion(*rect, QRegion::Ellipse);
-
 //   colorBtn->setMask(*region);
 
    connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
 
-   // colorBtn->connect(colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
+   spBox.resize(N+1);
 
-
-    spBox1 = new QDoubleSpinBox();
-    spBox2 = new QDoubleSpinBox();
-    spBox3 = new QDoubleSpinBox();
-
-    spBox1->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    spBox2->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    spBox3->setButtonSymbols(QAbstractSpinBox::NoButtons);
-
-    spBox1->setMinimum(-100);
-    spBox2->setMinimum(-100);
-    spBox3->setMinimum(-100);
-
+   for(int i=0; i<N+1; i++)
+   {
+       spBox[i] = new QDoubleSpinBox();
+       spBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
+       spBox[i]->setMinimum(-100);
+   }
 
     rb1 = new QRadioButton(">=");
     rb2 = new QRadioButton("=<");
@@ -36,18 +26,22 @@ imbaLayout::imbaLayout(int i)
     group->addButton(rb1);
     group->addButton(rb2);
 
-    this->addWidget(l1 = new QLabel(QString("%1: ").arg(i)));
+    label.resize(N+1);
+    label[0] = new QLabel(QString("%1: ").arg(i));
+    for(auto i=1; i<N+1; i++)
+        label[i] = new QLabel(QString("x%1 + ").arg(i));
 
-    this->addWidget(spBox1);
-    this->addWidget(l2 = new QLabel("x1 + "));
 
-    this->addWidget(spBox2);
-    this->addWidget(l3 = new QLabel("x2"));
+    for(int i=0; i<N; i++)
+    {
+        this->addWidget(label[i]);
+        this->addWidget(spBox[i]);
+    }
 
     this->addWidget(rb1);
     this->addWidget(rb2);
 
-    this->addWidget(spBox3);
+    this->addWidget(spBox[spBox.size()-1]);
 
     this->addWidget(colorBtn);
 
@@ -55,18 +49,23 @@ imbaLayout::imbaLayout(int i)
 
 imbaLayout::~imbaLayout()
 {
-    delete spBox1;
-    delete spBox2;
-    delete spBox3;
+    for(auto x:label)
+    {
+        this->removeWidget(x);
+        delete x;
+    }
+
+    for(auto x:spBox)
+    {
+        this->removeWidget(x);
+        delete x;
+    }
 
     delete rb1;
     delete rb2;
 
     delete group;
 
-    delete l1;
-    delete l2;
-    delete l3;
     delete colorBtn;
 }
 
