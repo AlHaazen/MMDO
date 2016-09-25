@@ -89,6 +89,36 @@ void imbaLayout::resize(int n)
     }
 }
 
+void imbaLayout::setColor(QColor color)
+{
+    if(color == Qt::black)
+    {
+        this->color = color;
+        colorBtn->setStyleSheet("");
+        colorBtn->update();
+
+    }
+    else
+    {
+        this->color = color;
+        QPalette pal = colorBtn->palette();
+        pal.setColor(QPalette::Base,color);
+        pal.setColor(QPalette::Window,color);
+
+        pal.setColor(QPalette::Button,color);
+        pal.setColor(QPalette::WindowText,color);
+
+        colorBtn->setAutoFillBackground(true);
+        colorBtn->setPalette(pal);
+        QString s=QString("background-color: rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
+        colorBtn->setStyleSheet(s);
+
+    }
+
+    colorBtn->update();
+    emit colorChanged();
+}
+
 void imbaLayout::getColor()
 {
     color = QColorDialog::getColor();

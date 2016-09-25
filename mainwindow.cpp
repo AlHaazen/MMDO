@@ -35,18 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->verticalLayout->insertLayout(1+i,l[i]);
     }
 
-//    l[0]->spBox1->setValue(0);   l[0]->spBox2->setValue(1);  l[0]->rb2->setChecked(true); l[0]->spBox3->setValue(12);
-//    l[1]->spBox1->setValue(8);   l[1]->spBox2->setValue(1);  l[1]->rb1->setChecked(true); l[1]->spBox3->setValue(16);
-//    l[2]->spBox1->setValue(1);   l[2]->spBox2->setValue(-1); l[2]->rb1->setChecked(true); l[2]->spBox3->setValue(-10);
-//    l[3]->spBox1->setValue(1);   l[3]->spBox2->setValue(1);  l[3]->rb1->setChecked(true); l[3]->spBox3->setValue(10);
-//    l[4]->spBox1->setValue(1);   l[4]->spBox2->setValue(3);  l[4]->rb1->setChecked(true); l[4]->spBox3->setValue(12);
-//    l[5]->spBox1->setValue(-1);  l[5]->spBox2->setValue(3);  l[5]->rb1->setChecked(true); l[5]->spBox3->setValue(-6);
-//    l[6]->spBox1->setValue(-5);  l[6]->spBox2->setValue(3);  l[6]->rb1->setChecked(true); l[6]->spBox3->setValue(-48);
-//    l[7]->spBox1->setValue(1);   l[7]->spBox2->setValue(0);  l[7]->rb2->setChecked(true); l[7]->spBox3->setValue(16);
-//    l[8]->spBox1->setValue(1);   l[8]->spBox2->setValue(4);  l[8]->rb2->setChecked(true); l[8]->spBox3->setValue(56);
-
     txtEdit = new QPlainTextEdit();
-
 
     ui->spinBox_3->setVisible(false);
     ui->spinBox_4->setVisible(false);
@@ -656,7 +645,7 @@ void MainWindow::on_Simplex_clicked()
 
     // загнали вільні члени
     for(int i = 0; i < matrix.size(); i++)
-        matrix[i][matrix[0].size()-1] = l[i]->spBox[N]->value();
+        matrix[i][matrix[0].size()-1] = l[i]->spBox[values]->value();
 
     /// Як виявилося, вектор В має містити тільки додатні значення
     /// І, здається тепер це вилізло боком, треба розгрібати
@@ -1110,7 +1099,7 @@ void MainWindow::normalizeInput()
 {
     for(int i=0; i<equals; i++)
     {
-        if(l[i]->spBox[N]->value()<0)
+        if(l[i]->spBox[values]->value()<0)
         {
             for(auto x:l[i]->spBox)
                 x->setValue(x->value() * -1);
@@ -1136,25 +1125,94 @@ void MainWindow::on_actionLoad_triggered()
     stream >> equals >> vars;
 
     this->equals = equals;
-    this->vars = vars;
+    this->values = vars;
 
     on_Equals_valueChanged(equals);
 //    on_Variables_editingFinished();
 
+    double tmpD;
+    int tmpI;
 
     for(int i=0; i<equals; i++)
     {
-        double tmp;
         for(int j=0; j<vars; j++)
         {
-            stream >> tmp;
+            stream >> tmpD;
+            l[i]->spBox[j]->setValue(tmpD);
         }
+
+        stream >> tmpI;
+        tmpI ? l[i]->rb1->setChecked(true) : l[i]->rb2->setChecked(true);
+
+        stream >> tmpD;
+        l[i]->spBox[vars]->setValue(tmpD);
+
+        stream >> tmpI;
+        int r,g,b;
+        stream >> r >> g >> b;
+        QColor color(r,g,b);
+
+        l[i]->setColor(QColor(r,g,b));
     }
 
+//    for(int i=0; i<vars; i++)
+//    {}
 
+    stream >> tmpI;
+    ui->spinBox_2->setValue(tmpI);
+
+    stream >> tmpI;
+    ui->spinBox->setValue(tmpI);
+
+    stream >> tmpI;
+    tmpI ? ui->radioButton_11->setChecked(true) : ui->radioButton_12->setChecked(true);
+
+    stream >> tmpI;
+    if(tmpI)
+    {
+        stream >> tmpI;
+        ui->spinBox_3->setValue(tmpI);
+
+        stream >> tmpI;
+        ui->spinBox_4->setValue(tmpI);
+    }
+
+    file.close();
+
+    on_actionCalculate_area_triggered();
 }
 
 void MainWindow::on_actionSave_triggered()
 {
+    if(filename.isEmpty())
+        filename = QFileDialog::getSaveFileName(this,"Зберегти","","MMДО/МС файли (*.fuf)");
+
+    QFile file(filename);
+
+    file.open(QIODevice::WriteOnly);
+
+    QTextStream stream(&file);
+
+    stream << equals << " " << values << endl;
+
+
+    for(int i=0; i<equals; i++)
+    {
+        for(int j=0; j<values; j++)
+            stream << l[i]->spBox[j]->value() << " ";
+
+        stream << l[i]->rb1->isChecked() << " ";
+        stream << l[i]->spBox[values]->value() << " ";
+
+        stream << "1 ";
+        int r,g,b;
+
+        l[i]->color.getRgb(&r,&g,&b,nullptr);
+        stream << r << " " << g << " " << b << endl;
+    }
+
+    stream << ui->spinBox_2->value() << " " << ui->spinBox->value() << " ";
+    stream << ui->radioButton_11->isChecked();
+
 
 }

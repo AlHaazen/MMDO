@@ -33,6 +33,7 @@ public:
     vector<QDoubleSpinBox*> spBox;
     vector<QLabel*> label;
 
+    void setColor(QColor color);
 
     int N = 2;
 public slots:
