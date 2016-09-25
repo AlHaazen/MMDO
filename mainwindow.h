@@ -77,11 +77,11 @@ private slots:
 
     void on_Simplex_clicked();
 
-    void on_IntLinear_clicked();
+    void on_IntLinear_clicked(){};
 
-    void on_DualSimplex_clicked();
+    void on_DualSimplex_clicked(){};
 
-    void on_FractLinear_clicked();
+    void on_FractLinear_clicked(){};
 
     void FracSpinBox();
 
@@ -153,7 +153,8 @@ private:
     double remX, remY;
     vector<QPointF> goodPoints;
     int equals = 9;         // 9 7
-    int vars = 2;
+    int values = 2;
+
     vector<imbaLayout*> l;
     QPlainTextEdit *txtEdit;
     QString filename;
