@@ -8,7 +8,7 @@ imbaLayout::imbaLayout(int i)
 //   QRegion *region = new QRegion(*rect, QRegion::Ellipse);
 //   colorBtn->setMask(*region);
 
-   connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(getColor()));
+   connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(changeColor()));
 
    spBox.resize(N+1);
 
@@ -44,8 +44,6 @@ imbaLayout::imbaLayout(int i)
     this->addWidget(spBox[spBox.size()-1]);
 
     this->addWidget(colorBtn);
-
-    palette = colorBtn->palette();
 
 }
 
@@ -93,16 +91,18 @@ void imbaLayout::resize(int n)
 
 void imbaLayout::setColor(QColor color)
 {
+    this->color = color;
+
     if(color == Qt::black)
     {
-        this->color = color;
-        colorBtn->setPalette(palette);
-        colorBtn->setStyleSheet("");
-        colorBtn->update();
+        colorBtn->setPalette(qApp->palette());
+        colorBtn->setStyleSheet("background-color: rgba(255, 255, 255, 0)");
+        /// Я єбав із цим розбиратися
+        /// Не паше - нахуй надо
+        /// Зроблю із цього фічу - будуть, с*ки, прозорими і красивими
     }
     else
     {
-        this->color = color;
         QPalette pal = colorBtn->palette();
         pal.setColor(QPalette::Base,color);
         pal.setColor(QPalette::Window,color);
@@ -111,8 +111,10 @@ void imbaLayout::setColor(QColor color)
         pal.setColor(QPalette::WindowText,color);
 
         colorBtn->setAutoFillBackground(true);
-        colorBtn->setPalette(pal);
+
         QString s=QString("background-color: rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
+
+        colorBtn->setPalette(pal);
         colorBtn->setStyleSheet(s);
 
     }
@@ -121,22 +123,14 @@ void imbaLayout::setColor(QColor color)
     emit colorChanged();
 }
 
-void imbaLayout::getColor()
+QColor imbaLayout::getColor()
 {
-    color = QColorDialog::getColor();
-    QPalette pal = colorBtn->palette();
-    pal.setColor(QPalette::Base,color);
-    pal.setColor(QPalette::Window,color);
+    return color;
+}
 
-    pal.setColor(QPalette::Button,color);
-    pal.setColor(QPalette::WindowText,color);
-
-    colorBtn->setAutoFillBackground(true);
-    colorBtn->setPalette(pal);
-    QString s=QString("background-color: rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
-    colorBtn->setStyleSheet(s);
-    colorBtn->update();
-
+void imbaLayout::changeColor()
+{
+    setColor(QColorDialog::getColor());
     emit colorChanged();
 }
 

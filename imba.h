@@ -17,34 +17,32 @@ class imbaLayout : public QHBoxLayout
     Q_OBJECT
 public:
 
-
     imbaLayout(int i);
     ~imbaLayout();
 
     void resize(int n);
 
-    QRadioButton *rb1, *rb2;
-    QButtonGroup *group;
-
-    QPushButton *colorBtn;
-
-    QColor color;
-
-    QPalette palette;
-    vector<QDoubleSpinBox*> spBox;
-    vector<QLabel*> label;
-
     void setColor(QColor color);
+    QColor getColor();
 
-    int N = 2;
+    QRadioButton *rb1, *rb2;
+    vector<QDoubleSpinBox*> spBox;
+
 public slots:
-  void  getColor();
+    void  changeColor();
 
 signals:
-  void colorChanged();
+    void colorChanged();
 
+private:
+    QColor color;
+
+    QButtonGroup *group;
+    QPushButton *colorBtn;
+
+    vector<QLabel*> label;
+    int N = 2;
 };
-
 
 
 #endif // IMBA_H

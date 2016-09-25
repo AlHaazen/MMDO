@@ -33,15 +33,13 @@ public:
 
     typedef struct _line
     {
-        int a,b,c;
+        double a,b,c;
     }LINE;
 
     LINE *getLines() const;
     void setLines(LINE *value);
 
 private slots:
-
-    void on_pushButton_2_clicked();
 
     void build_line(LINE line, QLineF *lines);
 
@@ -89,57 +87,13 @@ private slots:
 
     void normalizeInput();
 
-    void QuickHull (vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res)
-    {
-        if(set.empty())
-            return;
-        auto len = [](QPointF A, QPointF B, QPointF C)
-        {
-            double a = B.y() - A.y();
-            double b = A.x() - B.x();
-            return fabs((a*C.x() + b*C.y() + a*A.x() + b*B.x())) / sqrt(a*a + b*b);
-        };
-
-        auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
-        {
-            return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
-        };
-
-
-        double l = 0;
-
-        QPointF max;
-        for(auto point:set)
-        {
-            if(l < len(pMin,pMax,point))
-                l = len(pMin,pMax,point), max = point;
-        }
-
-
-        //Max - найдальша точка
-
-
-        //Сортування туди-сюди
-        vector<QPointF> upper, lower;
-        for(auto point:set)
-        {
-            if(point == pMax || point == pMin)
-                continue;
-            if(ccw(pMin,point,max)>0)
-                upper.push_back(point);
-            if(ccw(max,point,pMin)>0)
-                lower.push_back(point);
-        }
-
-        QuickHull(upper,pMin,max,res);
-        res.push_back(max);
-        QuickHull(lower,max,pMax,res);
-
-    };
+    void QuickHull (vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res);
 
     void on_actionLoad_triggered();
 
     void on_actionSave_triggered();
+
+    void on_checkBoxGradient_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -149,8 +103,6 @@ private:
     LINE staticLines[2];
 
     QLineF *qlines;
-    double maxmin;
-    double remX, remY;
     vector<QPointF> goodPoints;
     int equals = 9;         // 9 7
     int values = 2;

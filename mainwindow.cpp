@@ -42,8 +42,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->checkBox,SIGNAL(stateChanged(int)),SLOT(FracSpinBox()));
 
-
     on_Clear_clicked();
+
+    ///Двоїста, цілочислова і дробовочислова не працюють
+    ///Вибачте за тимчасові незручності
+    ui->IntLinear->setVisible(false);
+    ui->FractLinear->setVisible(false);
+    ui->DualSimplex->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -51,19 +56,6 @@ MainWindow::~MainWindow()
     delete scene;
     delete ui;
     delete txtEdit;
-}
-
-void MainWindow::on_pushButton_2_clicked()//Build
-{
-
-    for(int i=0;i<equals;i++)
-    {
-        lines[i].a = l[i]->spBox[0]->value();
-        lines[i].b = l[i]->spBox[1]->value();
-        lines[i].c = l[i]->spBox[2]->value();
-        build_line(lines[i], &qlines[i]);
-        scene->addLine(qlines[i],QPen(l[i]->color));
-    }
 }
 
 void MainWindow::build_line(LINE line, QLineF *qline)
@@ -146,7 +138,22 @@ void MainWindow::build_line(LINE line, QLineF *qline)
 void MainWindow::on_pushButton_5_clicked()//Calculate
 {
     on_Clear_clicked();
-    on_pushButton_2_clicked();
+
+    for(int i=0;i<equals;i++)
+    {
+        lines[i].a = l[i]->spBox[0]->value();
+        lines[i].b = l[i]->spBox[1]->value();
+        lines[i].c = l[i]->spBox[2]->value();
+        build_line(lines[i], &qlines[i]);
+        scene->addLine(qlines[i],QPen(l[i]->getColor()));
+    }
+
+    if(ui->checkBoxGradient->isChecked())
+    {
+        double k = ui->spinBox_2->value() > ui->spinBox->value() ? ui->spinBox_2->value()/N : ui->spinBox->value()/N;
+        scene->addLine(0,0,ui->spinBox_2->value()/k*10, -ui->spinBox->value()/k*10, QPen(Qt::gray));
+    }
+
 
     vector <QPointF> points;
     points.push_back(QPointF(0,0));
@@ -165,14 +172,13 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
             solve_matrix(lines[i], lines[j],&points.at(points.size()-1));
         }
 
-    if(ui->radioButton_11->isChecked())
-        maxmin = -INFINITY;
-    else
-        maxmin = INFINITY;
+    double max = -INFINITY;
+    double min = INFINITY;
 
-    for(int i = 0; i <points.size(); i++)
+    double xMax = 0.0, yMax = 0.0, xMin = 0.0, yMin = 0.0;
+
+    for(auto point: points)
     {
-        QPointF point = points[i];
         if(point.x() >=0 && point.y() >= 0)
         {
             if(!checkPoint(point))
@@ -181,34 +187,30 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
             //точка попадирувала
             goodPoints.push_back(point);
 
+            auto targetFunc = [this,point]()
+            {
+                return ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y();
+            };
 
-            //єбу що, питай в Стеця...
-            //кажись, пошук графічного розв'язку..
-            if(ui->radioButton_11->isChecked())
+            if(targetFunc() > max)
             {
-                if(ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y() > maxmin)
-                {
-                    maxmin = ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y();
-                    remX = point.x(); remY = point.y();
-                }
+                max = targetFunc();
+                xMax = point.x(); yMax = point.y();
             }
-            else
+
+            if(targetFunc() < min)
             {
-                if(ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y() < maxmin)
-                {
-                    maxmin = ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y();
-                    remX = point.x(); remY = point.y();
-                }
+                min = targetFunc();
+                xMin = point.x(); yMin = point.y();
             }
+
         }
     }
 
     QString LabelText;
-    LabelText = QString(ui->radioButton_11->isChecked() ? "Max" : "Min") + QString(" of F(x1,x2) = ")
-            + QString::number(ui->spinBox_2->value()) + QString("x1")
-            + QString(ui->spinBox->value()>=0 ? " + " : " - ") + QString::number(abs(ui->spinBox->value()))
-            + QString("x2 is \n") + QString::number(maxmin)
-            + " in x1 = " + QString::number(remX) + ", x2 = " + QString::number(remY);
+    LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax)
+            + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
+
     ui->label_16->setText(LabelText);
 
     sort(goodPoints);
@@ -220,9 +222,7 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
     {
         point.setX(point.x()*10);
         point.setY(point.y()*-10);
-
-        scene->addLine(point.x(),point.y(),point.x(),point.y(),QPen(QColor("red")));
-
+        //        scene->addLine(point.x(),point.y(),point.x(),point.y(),QPen(QColor("red")));
         path.lineTo(point);
     }
     //path.lineTo(goodPoints[0]);
@@ -258,7 +258,7 @@ void MainWindow::on_action_2_triggered()//про мене
 
 void MainWindow::on_actionBuild_triggered()//Build
 {
-    MainWindow::on_pushButton_2_clicked();
+    MainWindow::on_pushButton_5_clicked();
 }
 
 void MainWindow::on_actionCalculate_area_triggered()//Calculate
@@ -338,7 +338,6 @@ void MainWindow::on_Equals_valueChanged(int arg1)
     }
     else
     {
-
         for(int i=equals-1; i>=ui->Equals->value();i--)
         {
             ui->verticalLayout->removeItem(l[i]);
@@ -1111,75 +1110,123 @@ void MainWindow::normalizeInput()
     }
 }
 
+void MainWindow::QuickHull(vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res)
+{
+    if(set.empty())
+        return;
+
+    auto len = [](QPointF A, QPointF B, QPointF C)
+    {
+        double a = B.y() - A.y();
+        double b = A.x() - B.x();
+        return fabs((a*C.x() + b*C.y() + a*A.x() + b*B.x())) / sqrt(a*a + b*b);
+    };
+
+    auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
+    {
+        return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
+    };
+
+    double l = 0;
+
+    QPointF max;
+    for(auto point:set)
+    {
+        if(l < len(pMin,pMax,point))
+            l = len(pMin,pMax,point), max = point;
+    }
+
+    //Max - найдальша точка
+
+    //Сортування туди-сюди
+    vector<QPointF> upper, lower;
+    for(auto point:set)
+    {
+        if(point == pMax || point == pMin)
+            continue;
+        if(ccw(pMin,point,max)>0)
+            upper.push_back(point);
+        if(ccw(max,point,pMin)>0)
+            lower.push_back(point);
+    }
+
+    QuickHull(upper,pMin,max,res);
+    res.push_back(max);
+    QuickHull(lower,max,pMax,res);
+
+}
+
 void MainWindow::on_actionLoad_triggered()
 {
     filename = QFileDialog::getOpenFileName(this,"Відкрити","","MMДО/МС файли (*.fuf)");
 
     QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-
-    QTextStream stream(&file);
-
-    int equals, vars;
-
-    stream >> equals >> vars;
-
-    this->equals = equals;
-    this->values = vars;
-
-    on_Equals_valueChanged(equals);
-//    on_Variables_editingFinished();
-
-    double tmpD;
-    int tmpI;
-
-    for(int i=0; i<equals; i++)
+    if(file.open(QIODevice::ReadOnly))
     {
-        for(int j=0; j<vars; j++)
+
+        QTextStream stream(&file);
+
+        int equals, vars;
+
+        stream >> equals >> vars;
+
+        this->equals = equals;
+        this->values = vars;
+
+        on_Equals_valueChanged(equals);
+        //    on_Variables_editingFinished();
+
+        double tmpD;
+        int tmpI;
+
+        for(int i=0; i<equals; i++)
         {
+            for(int j=0; j<vars; j++)
+            {
+                stream >> tmpD;
+                l[i]->spBox[j]->setValue(tmpD);
+            }
+
+            stream >> tmpI;
+            tmpI ? l[i]->rb1->setChecked(true) : l[i]->rb2->setChecked(true);
+
             stream >> tmpD;
-            l[i]->spBox[j]->setValue(tmpD);
+            l[i]->spBox[vars]->setValue(tmpD);
+
+            stream >> tmpI;
+            int r,g,b;
+            stream >> r >> g >> b;
+            QColor color(r,g,b);
+
+            l[i]->setColor(QColor(r,g,b));
         }
 
-        stream >> tmpI;
-        tmpI ? l[i]->rb1->setChecked(true) : l[i]->rb2->setChecked(true);
-
-        stream >> tmpD;
-        l[i]->spBox[vars]->setValue(tmpD);
+        //    for(int i=0; i<vars; i++)
+        //    {}
 
         stream >> tmpI;
-        int r,g,b;
-        stream >> r >> g >> b;
-        QColor color(r,g,b);
+        ui->spinBox_2->setValue(tmpI);
 
-        l[i]->setColor(QColor(r,g,b));
+        stream >> tmpI;
+        ui->spinBox->setValue(tmpI);
+
+        stream >> tmpI;
+        tmpI ? ui->radioButton_11->setChecked(true) : ui->radioButton_12->setChecked(true);
+
+        stream >> tmpI;
+        if(tmpI)
+        {
+            stream >> tmpI;
+            ui->spinBox_3->setValue(tmpI);
+
+            stream >> tmpI;
+            ui->spinBox_4->setValue(tmpI);
+        }
+
+        file.close();
+
+        on_actionCalculate_area_triggered();
     }
-
-//    for(int i=0; i<vars; i++)
-//    {}
-
-    stream >> tmpI;
-    ui->spinBox_2->setValue(tmpI);
-
-    stream >> tmpI;
-    ui->spinBox->setValue(tmpI);
-
-    stream >> tmpI;
-    tmpI ? ui->radioButton_11->setChecked(true) : ui->radioButton_12->setChecked(true);
-
-    stream >> tmpI;
-    if(tmpI)
-    {
-        stream >> tmpI;
-        ui->spinBox_3->setValue(tmpI);
-
-        stream >> tmpI;
-        ui->spinBox_4->setValue(tmpI);
-    }
-
-    file.close();
-
-    on_actionCalculate_area_triggered();
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -1189,30 +1236,36 @@ void MainWindow::on_actionSave_triggered()
 
     QFile file(filename);
 
-    file.open(QIODevice::WriteOnly);
-
-    QTextStream stream(&file);
-
-    stream << equals << " " << values << endl;
-
-
-    for(int i=0; i<equals; i++)
+    if(file.open(QIODevice::WriteOnly))
     {
-        for(int j=0; j<values; j++)
-            stream << l[i]->spBox[j]->value() << " ";
 
-        stream << l[i]->rb1->isChecked() << " ";
-        stream << l[i]->spBox[values]->value() << " ";
+        QTextStream stream(&file);
 
-        stream << "1 ";
-        int r,g,b;
+        stream << equals << " " << values << endl;
 
-        l[i]->color.getRgb(&r,&g,&b,nullptr);
-        stream << r << " " << g << " " << b << endl;
+
+        for(int i=0; i<equals; i++)
+        {
+            for(int j=0; j<values; j++)
+                stream << l[i]->spBox[j]->value() << " ";
+
+            stream << l[i]->rb1->isChecked() << " ";
+            stream << l[i]->spBox[values]->value() << " ";
+
+            stream << "1 ";
+            int r,g,b;
+
+            l[i]->getColor().getRgb(&r,&g,&b,nullptr);
+            stream << r << " " << g << " " << b << endl;
+        }
+
+        stream << ui->spinBox_2->value() << " " << ui->spinBox->value() << " ";
+        stream << ui->radioButton_11->isChecked();
+
     }
+}
 
-    stream << ui->spinBox_2->value() << " " << ui->spinBox->value() << " ";
-    stream << ui->radioButton_11->isChecked();
-
-
+void MainWindow::on_checkBoxGradient_clicked()
+{
+    on_pushButton_5_clicked(); // не краще ніж попереднє, але буде фікситися
 }

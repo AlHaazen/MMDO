@@ -58,6 +58,7 @@ public:
     QSpinBox *spinBox;
     QSpinBox *spinBox_4;
     QLabel *label_3;
+    QSpacerItem *horizontalSpacer_2;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_6;
     QRadioButton *radioButton_11;
@@ -66,10 +67,11 @@ public:
     QSpacerItem *verticalSpacer_2;
     QLabel *label_16;
     QHBoxLayout *horizontalLayout_13;
+    QVBoxLayout *verticalLayout_6;
+    QSpacerItem *verticalSpacer;
+    QCheckBox *checkBoxGradient;
     QSpacerItem *horizontalSpacer;
     QVBoxLayout *verticalLayout_2;
-    QHBoxLayout *horizontalLayout_3;
-    QPushButton *pushButton_2;
     QPushButton *pushButton_5;
     QPushButton *Simplex;
     QPushButton *IntLinear;
@@ -133,6 +135,11 @@ public:
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
         label = new QLabel(layoutWidget);
         label->setObjectName(QStringLiteral("label"));
+        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
+        label->setSizePolicy(sizePolicy);
 
         horizontalLayout_2->addWidget(label);
 
@@ -195,6 +202,10 @@ public:
 
         horizontalLayout_5->addWidget(label_3);
 
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_2);
+
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setSpacing(6);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
@@ -245,6 +256,21 @@ public:
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setSpacing(6);
         horizontalLayout_13->setObjectName(QStringLiteral("horizontalLayout_13"));
+        verticalLayout_6 = new QVBoxLayout();
+        verticalLayout_6->setSpacing(6);
+        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_6->addItem(verticalSpacer);
+
+        checkBoxGradient = new QCheckBox(layoutWidget);
+        checkBoxGradient->setObjectName(QStringLiteral("checkBoxGradient"));
+
+        verticalLayout_6->addWidget(checkBoxGradient);
+
+
+        horizontalLayout_13->addLayout(verticalLayout_6);
+
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_13->addItem(horizontalSpacer);
@@ -252,34 +278,20 @@ public:
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        horizontalLayout_3 = new QHBoxLayout();
-        horizontalLayout_3->setSpacing(6);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-        pushButton_2 = new QPushButton(layoutWidget);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
-        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
-        pushButton_2->setSizePolicy(sizePolicy);
-        pushButton_2->setCheckable(false);
-
-        horizontalLayout_3->addWidget(pushButton_2);
-
         pushButton_5 = new QPushButton(layoutWidget);
         pushButton_5->setObjectName(QStringLiteral("pushButton_5"));
-        sizePolicy.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
-        pushButton_5->setSizePolicy(sizePolicy);
+        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
+        pushButton_5->setSizePolicy(sizePolicy1);
 
-        horizontalLayout_3->addWidget(pushButton_5);
-
-
-        verticalLayout_2->addLayout(horizontalLayout_3);
+        verticalLayout_2->addWidget(pushButton_5);
 
         Simplex = new QPushButton(layoutWidget);
         Simplex->setObjectName(QStringLiteral("Simplex"));
-        sizePolicy.setHeightForWidth(Simplex->sizePolicy().hasHeightForWidth());
-        Simplex->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(Simplex->sizePolicy().hasHeightForWidth());
+        Simplex->setSizePolicy(sizePolicy1);
 
         verticalLayout_2->addWidget(Simplex);
 
@@ -322,15 +334,15 @@ public:
 
         Clear = new QPushButton(layoutWidget);
         Clear->setObjectName(QStringLiteral("Clear"));
-        sizePolicy.setHeightForWidth(Clear->sizePolicy().hasHeightForWidth());
-        Clear->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(Clear->sizePolicy().hasHeightForWidth());
+        Clear->setSizePolicy(sizePolicy1);
 
         verticalLayout_2->addWidget(Clear);
 
         Close = new QPushButton(layoutWidget);
         Close->setObjectName(QStringLiteral("Close"));
-        sizePolicy.setHeightForWidth(Close->sizePolicy().hasHeightForWidth());
-        Close->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(Close->sizePolicy().hasHeightForWidth());
+        Close->setSizePolicy(sizePolicy1);
 
         verticalLayout_2->addWidget(Close);
 
@@ -394,8 +406,8 @@ public:
         radioButton_12->setText(QApplication::translate("MainWindow", "mi&n", 0));
         checkBox->setText(QApplication::translate("MainWindow", "\320\224\321\200\320\276\320\261\320\276\320\262\320\260", 0));
         label_16->setText(QString());
-        pushButton_2->setText(QApplication::translate("MainWindow", "Build", 0));
-        pushButton_5->setText(QApplication::translate("MainWindow", "Calculate area", 0));
+        checkBoxGradient->setText(QApplication::translate("MainWindow", "\320\223\321\200\320\260\320\264\321\226\321\224\320\275\321\202", 0));
+        pushButton_5->setText(QApplication::translate("MainWindow", "\320\240\320\276\320\267\321\200\320\260\321\205\321\203\320\262\320\260\321\202\320\270", 0));
         Simplex->setText(QApplication::translate("MainWindow", "\320\241\320\270\320\274\320\273\320\265\320\272\321\201", 0));
         IntLinear->setText(QApplication::translate("MainWindow", "\320\246\321\226\320\273\320\276\321\207\320\270\321\201\320\273\320\276\320\262\320\260", 0));
         FractLinear->setText(QApplication::translate("MainWindow", "\320\224\321\200\320\276\320\261\320\276\320\262\320\276-\320\273\321\226\320\275\321\226\320\271\320\275\320\260", 0));
