@@ -77,11 +77,11 @@ private slots:
 
     void on_Simplex_clicked();
 
-    void on_IntLinear_clicked();
+    void on_IntLinear_clicked(){};
 
-    void on_DualSimplex_clicked();
+    void on_DualSimplex_clicked(){};
 
-    void on_FractLinear_clicked();
+    void on_FractLinear_clicked(){};
 
     void FracSpinBox();
 
