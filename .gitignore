@@ -1,0 +1,9 @@
+*.[o]
+*.user*
+*.Debug
+*.Release
+*.autosave
+moc*
+Makefile*
+qrc*
+

@@ -30,6 +30,7 @@ public:
 
     QColor color;
 
+    QPalette palette;
     vector<QDoubleSpinBox*> spBox;
     vector<QLabel*> label;
 

@@ -45,6 +45,8 @@ imbaLayout::imbaLayout(int i)
 
     this->addWidget(colorBtn);
 
+    palette = colorBtn->palette();
+
 }
 
 imbaLayout::~imbaLayout()
@@ -94,9 +96,9 @@ void imbaLayout::setColor(QColor color)
     if(color == Qt::black)
     {
         this->color = color;
+        colorBtn->setPalette(palette);
         colorBtn->setStyleSheet("");
         colorBtn->update();
-
     }
     else
     {
