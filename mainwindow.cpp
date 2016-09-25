@@ -361,6 +361,7 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
 
 void MainWindow::on_Equals_valueChanged(int arg1)
 {
+    ui->Equals->setValue(arg1);
 
     if(ui->Equals->value() > equals)
     {
@@ -1154,4 +1155,41 @@ void MainWindow::normalizeInput()
 
         }
     }
+}
+
+void MainWindow::on_actionLoad_triggered()
+{
+    filename = QFileDialog::getOpenFileName(this,"Відкрити","","MMДО/МС файли (*.fuf)");
+
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+
+    QTextStream stream(&file);
+
+    int equals, vars;
+
+    stream >> equals >> vars;
+
+    this->equals = equals;
+    this->vars = vars;
+
+    on_Equals_valueChanged(equals);
+//    on_Variables_editingFinished();
+
+
+    for(int i=0; i<equals; i++)
+    {
+        double tmp;
+        for(int j=0; j<vars; j++)
+        {
+            stream >> tmp;
+        }
+    }
+
+
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+
 }

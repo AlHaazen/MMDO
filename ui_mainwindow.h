@@ -40,6 +40,8 @@ public:
     QAction *actionCalculate_area;
     QAction *actionClear;
     QAction *actionClose;
+    QAction *actionLoad;
+    QAction *actionSave;
     QWidget *centralWidget;
     QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout;
@@ -82,6 +84,7 @@ public:
     QMenuBar *menuBar;
     QMenu *menuImba_knopka;
     QMenu *menu;
+    QMenu *menu_2;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -103,6 +106,10 @@ public:
         actionClear->setObjectName(QStringLiteral("actionClear"));
         actionClose = new QAction(MainWindow);
         actionClose->setObjectName(QStringLiteral("actionClose"));
+        actionLoad = new QAction(MainWindow);
+        actionLoad->setObjectName(QStringLiteral("actionLoad"));
+        actionSave = new QAction(MainWindow);
+        actionSave->setObjectName(QStringLiteral("actionSave"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         layoutWidget = new QWidget(centralWidget);
@@ -347,8 +354,11 @@ public:
         menuImba_knopka->setObjectName(QStringLiteral("menuImba_knopka"));
         menu = new QMenu(menuBar);
         menu->setObjectName(QStringLiteral("menu"));
+        menu_2 = new QMenu(menuBar);
+        menu_2->setObjectName(QStringLiteral("menu_2"));
         MainWindow->setMenuBar(menuBar);
 
+        menuBar->addAction(menu_2->menuAction());
         menuBar->addAction(menu->menuAction());
         menuBar->addAction(menuImba_knopka->menuAction());
         menuImba_knopka->addSeparator();
@@ -358,6 +368,8 @@ public:
         menu->addAction(actionCalculate_area);
         menu->addAction(actionClear);
         menu->addAction(actionClose);
+        menu_2->addAction(actionLoad);
+        menu_2->addAction(actionSave);
 
         retranslateUi(MainWindow);
 
@@ -373,6 +385,8 @@ public:
         actionCalculate_area->setText(QApplication::translate("MainWindow", "&Calculate area", 0));
         actionClear->setText(QApplication::translate("MainWindow", "C&lear", 0));
         actionClose->setText(QApplication::translate("MainWindow", "Cl&ose", 0));
+        actionLoad->setText(QApplication::translate("MainWindow", "\320\222\321\226\320\264\320\272\321\200\320\270\321\202\320\270", 0));
+        actionSave->setText(QApplication::translate("MainWindow", "\320\227\320\261\320\265\321\200\320\265\320\263\321\202\320\270", 0));
         label->setText(QApplication::translate("MainWindow", "F(x1;x2)=", 0));
         label_2->setText(QApplication::translate("MainWindow", "x1 +", 0));
         label_3->setText(QApplication::translate("MainWindow", "x2 ->", 0));
@@ -390,6 +404,7 @@ public:
         Close->setText(QApplication::translate("MainWindow", "Close", 0));
         menuImba_knopka->setTitle(QApplication::translate("MainWindow", "\320\224\320\276\320\262\321\226\320\264\320\272\320\260", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\320\236\320\277\321\206\321\226\321\227", 0));
+        menu_2->setTitle(QApplication::translate("MainWindow", "\320\244\320\260\320\271\320\273", 0));
     } // retranslateUi
 
 };

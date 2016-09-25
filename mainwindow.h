@@ -137,6 +137,10 @@ private slots:
 
     };
 
+    void on_actionLoad_triggered();
+
+    void on_actionSave_triggered();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
@@ -149,8 +153,10 @@ private:
     double remX, remY;
     vector<QPointF> goodPoints;
     int equals = 9;         // 9 7
+    int vars = 2;
     vector<imbaLayout*> l;
     QPlainTextEdit *txtEdit;
+    QString filename;
 
 };
 

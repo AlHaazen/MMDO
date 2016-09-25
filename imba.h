@@ -38,12 +38,7 @@ public slots:
 signals:
   void colorChanged();
 
-
-
-
 };
-
-
 
 
 
