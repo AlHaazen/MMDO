@@ -1,6 +1,5 @@
 #include "logic.h"
 
-
 void MakeVector(int m, int n, vector<vector<double> > &matrix)
 {
 
@@ -29,22 +28,6 @@ void MakeVector(int m, int n, vector<vector<double> > &matrix)
         for(j = 0; j <col; j++)
             matrix[i][j] -= a*matrix[m][j];
     }
-}
-
-void MatrixOut(vector<vector<double> > *matrix)
-{
-    //        printf("\n");
-    //        int i, j;
-    //        for(j = 0; j < J-1; j++)
-    //            printf("   X%d   ", j+1);
-    //        printf("   B\n");
-    //        for(i = 0; i < I; i++)
-    //        {
-    //            for(j = 0; j < J; j++)
-    //                printf("% 7.3lf ", matrix[i][j]);
-    //            printf("\n");
-    //        }
-    //        printf("\n");
 }
 
 double FormSimlexRow(vector<vector<double> > &matrix, vector<double> &value, vector<double> &simplex, vector<double> &multi)
@@ -97,9 +80,6 @@ int  oVector(vector<vector<double> > matrix, int n)
 
 int ValidateSimplexRow(vector<double> &simplex)
 {
-    /// op
-    /// 1 = min, -1 - max
-
     int r = -1, j;
 
     double min = INFINITY;
@@ -133,4 +113,94 @@ int MinimalGRZero(int n, vector<vector<double> > matrix)
                 MGRZ = matrix[i][col-1]/matrix[i][n];
             }
     return r;
+}
+
+QString Simplex(vector<vector<double> > &matrix, vector<double> &value)
+{
+    QString stringResult = "";
+    int validatei, validatej = 0;
+
+    while(validatej != -1)
+    {
+        vector<double> simplex;
+        simplex.resize(matrix[0].size(),0);
+
+        vector<double> multi;
+        multi.resize(matrix.size(),0);
+
+        FormSimlexRow(matrix, value, simplex,multi);
+
+        stringResult += formOutput(matrix,multi,value,simplex);
+        stringResult +="\n\n\n";
+
+        validatej = ValidateSimplexRow(simplex);
+
+        if(validatej != -1)
+        {
+            validatei = MinimalGRZero(validatej, matrix);
+            if(validatei == -1)
+            {
+                cout << "Не сумісна матриця\n";
+                return "";
+            }
+            MakeVector(validatei, validatej,matrix);
+        }
+    }
+    return stringResult;
+}
+
+QString formOutput(vector<vector<double> > &matrix, vector<double> &multi, vector<double> &value, vector<double> &simplex)
+{
+    QString s = "";
+    s += QString("\t");
+    for(unsigned i = 0; i < matrix[0].size() - 1; i++)
+    {
+        QString buf;
+        buf.sprintf(" X%d\t", i+1);
+        s += buf;
+    }
+    s += QString(" B\n");
+
+    s += QString("C\t");
+    for(unsigned i = 0; i < matrix[0].size() - 1; i++)
+    {
+        QString buf;
+        if(fabs(value[i]) > 100000)// треба буде подумати
+            buf.sprintf(" -M\t");
+        else
+            buf.sprintf(" %.2lf\t", value[i]);
+        s += buf;
+    }
+    s += "\n";
+
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        if(fabs(multi[i]) < 100000)
+            s += QString(" %1\t|").arg(multi[i]);
+        else
+            s += QString(multi[i] < 0 ? "-M\t|":" M\t|");
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+        {
+            QString buf;
+            buf.sprintf("% .2lf", matrix[i][j]);
+            s+=buf;
+            if(j<matrix[0].size()-1)
+                s+="\t";
+
+        }
+        s += "\n";
+    }
+    s+="Simplex row:\n\t";
+    for(unsigned i = 0; i < matrix[0].size(); i++)
+    {
+
+        QString buf;
+        if(fabs(simplex[i]) < 100000)// треба буде подумати
+            buf.sprintf("% .2lf\t", simplex[i]);
+        else
+            buf.sprintf(simplex[i] < 0 ? "-M\t":" M\t");
+        s+=buf;
+    }
+
+    return s;
 }

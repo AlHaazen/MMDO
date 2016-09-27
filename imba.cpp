@@ -2,22 +2,22 @@
 
 imbaLayout::imbaLayout(int i)
 {
-   colorBtn = new QPushButton();
+    colorBtn = new QPushButton();
 
-//   QRect *rect = new QRect(0,0,25,25);
-//   QRegion *region = new QRegion(*rect, QRegion::Ellipse);
-//   colorBtn->setMask(*region);
+    //   QRect *rect = new QRect(0,0,25,25);
+    //   QRegion *region = new QRegion(*rect, QRegion::Ellipse);
+    //   colorBtn->setMask(*region);
 
-   connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(changeColor()));
+    connect(this->colorBtn,SIGNAL(clicked(bool)),this,SLOT(changeColor()));
 
-   spBox.resize(N+1);
+    spBox.resize(N+1);
 
-   for(int i=0; i<N+1; i++)
-   {
-       spBox[i] = new QDoubleSpinBox();
-       spBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
-       spBox[i]->setMinimum(-100);
-   }
+    for(int i=0; i<N+1; i++)
+    {
+        spBox[i] = new QDoubleSpinBox();
+        spBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        spBox[i]->setMinimum(-100);
+    }
 
     rb1 = new QRadioButton(">=");
     rb2 = new QRadioButton("=<");
@@ -27,9 +27,12 @@ imbaLayout::imbaLayout(int i)
     group->addButton(rb2);
 
     label.resize(N+1);
-    label[0] = new QLabel(QString("%1: ").arg(i));
+    label[0] = new QLabel(QString("%1:").arg(i));
+
     for(auto i=1; i<N+1; i++)
-        label[i] = new QLabel(QString("x%1 + ").arg(i));
+        label[i] = new QLabel(QString("x%1 +").arg(i));
+
+    label[N] = new QLabel(QString("x%1").arg(N));
 
 
     for(int i=0; i<N; i++)
@@ -37,6 +40,7 @@ imbaLayout::imbaLayout(int i)
         this->addWidget(label[i]);
         this->addWidget(spBox[i]);
     }
+    this->addWidget(label[N]);
 
     this->addWidget(rb1);
     this->addWidget(rb2);

@@ -71,19 +71,15 @@ private slots:
 
     void on_Close_clicked();
 
-    QString formOutput(vector<vector<double> > &matrix, vector<double> &multi, vector<double> &value, vector<double> &simplex);
-
     void on_Simplex_clicked();
 
     void on_IntLinear_clicked(){};
 
-    void on_DualSimplex_clicked(){};
+    void on_DualSimplex_clicked();
 
     void on_FractLinear_clicked(){};
 
     void FracSpinBox();
-
-    void on_pushButton_clicked();
 
     void normalizeInput();
 

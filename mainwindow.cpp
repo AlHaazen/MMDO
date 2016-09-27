@@ -44,11 +44,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     on_Clear_clicked();
 
-    ///Двоїста, цілочислова і дробовочислова не працюють
+    ///цілочислова і дробовочислова не працюють
     ///Вибачте за тимчасові незручності
     ui->IntLinear->setVisible(false);
     ui->FractLinear->setVisible(false);
-    ui->DualSimplex->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -56,6 +55,8 @@ MainWindow::~MainWindow()
     delete scene;
     delete ui;
     delete txtEdit;
+    delete lines;
+    delete qlines;
 }
 
 void MainWindow::build_line(LINE line, QLineF *qline)
@@ -374,6 +375,346 @@ void MainWindow::on_Variables_editingFinished()
 {
 
 }
+
+void MainWindow::FracSpinBox()
+{
+    ui->spinBox_3->setVisible(ui->checkBox->isChecked());
+    ui->spinBox_4->setVisible(ui->checkBox->isChecked());
+
+}
+
+void MainWindow::on_Simplex_clicked()
+{
+    normalizeInput();
+
+    //створили матрцю
+    vector<vector<double> > matrix(equals);
+    for(auto &x:matrix)
+        x.resize(values + equals,0);
+
+    // записали Х1 та Х2
+    for(int i=0; i<equals; i++)
+        for(int j=0; j<values; j++)
+            matrix[i][j]=l[i]->spBox[j]->value();
+
+    // Записали додаткові змінні
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
+
+    // записали штучні змінні
+    for(int i = 0; i < matrix.size(); i++)
+        if(l[i]->rb1->isChecked())
+        {
+            for(auto &x: matrix)
+                x.push_back(0);
+            matrix[i][matrix[0].size()-1] = 1;
+        }
+
+    // загнали вільні члени
+    for(int i = 0; i < matrix.size(); i++)
+        matrix[i].push_back(l[i]->spBox[values]->value());
+
+    vector<double> value(matrix[0].size(),0);
+
+    // заносимо в value M для штучних змінних
+    int j = 0;
+    for(auto x:l)
+
+        if(x->rb1->isChecked())
+            value[values + equals + j++] = -1000000000000;
+        //змінні + рівняння + вже занесениі М
+
+    /// Змінити
+    value[0] = ui->spinBox_2->value();
+    value[1] = ui->spinBox->value();
+
+    if(ui->radioButton_12->isChecked())
+    {
+        value[0] = - ui->spinBox_2->value();
+        value[1] = -ui->spinBox->value();
+    }
+
+    // вивід для дебагу
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+            cout << matrix[i][j] << ' ';
+        cout << endl;
+    }
+    cout << endl;
+    for(unsigned i = 0; i < value.size(); i++)
+        cout << value[i] << ' ';
+    cout << endl;
+
+    QString res = Simplex(matrix,value);
+
+    if(res == "")
+        res = "Щось пішло не так";
+
+    txtEdit->setPlainText(res);
+    txtEdit->showMaximized();
+}
+
+void MainWindow::on_DualSimplex_clicked()
+{
+    normalizeInput();
+
+    //створили матрицю
+    vector<vector<double> > matrix(values);
+    for(auto &x:matrix)
+        x.resize(equals);
+
+    //занесли значення
+    for(int i=0; i<equals; i++)
+        for(int j=0; j<values; j++)
+        {
+            if(ui->radioButton_12->isChecked() && l[i]->rb1->isChecked())
+                matrix[j][i] = -l[i]->spBox[j]->value();
+            else
+                matrix[j][i] = l[i]->spBox[j]->value();
+        }
+
+    //Додаємо штучні змінні
+
+    //    for(int i=0; i<values; i++)
+    //        for(int j=0; j<values; j++)
+    //            if(i==j)
+    //                matrix[i].push_back(-1);
+    //            else matrix[i].push_back(0);
+
+
+    for(int i=0; i<values; i++)
+        for(int j=0; j<values; j++)
+            if(i==j)
+                matrix[i].push_back(1);
+            else matrix[i].push_back(0);
+
+
+    // загнали вільні члени
+    matrix[0].push_back(ui->spinBox_2->value());
+    matrix[1].push_back(ui->spinBox->value());
+
+    vector<double> value(matrix[0].size(),0);
+
+    // заносимо ціни
+    for(int i=0; i<equals; i++)
+    {
+        value[i] = -l[i]->spBox[values]->value();
+        if(l[i]->rb1->isChecked())
+            value[i] *= -1;
+    }
+
+    for(unsigned i = matrix[0].size()-1 - values; i < matrix[0].size()-1; i++)
+        value[i]=-10000000;
+
+    // вивід для дебагу
+    for(unsigned i = 0; i < matrix.size(); i++)
+    {
+        for(unsigned j = 0; j < matrix[0].size(); j++)
+            cout << matrix[i][j] << '\t';
+        cout << endl;
+    }
+    for(unsigned i = 0;i < value.size(); i++)
+        cout<<value[i]<<' ';
+    cout<<endl;
+
+    QString res = Simplex(matrix,value);
+
+    if(res == "")
+        res = "Щось пішло не так";
+
+    txtEdit->setPlainText(res);
+    txtEdit->showMaximized();
+
+}
+
+void MainWindow::on_Clear_clicked()
+{
+    scene->clear();
+    scene->addLine(500, 0, -500, 0,QPen(QColor("blue")));
+    scene->addLine(0, -500, 0, 500,QPen(QColor("blue")));
+    ui->label_16->clear();
+
+}
+
+void MainWindow::on_Close_clicked()
+{
+    this->close();
+
+}
+
+void MainWindow::normalizeInput()
+{
+    for(auto x:l)
+        if(x->spBox[values]->value() < 0)
+        {
+            for(auto y:x->spBox)
+                y->setValue(y->value() * -1);
+            x->rb1->setChecked(!x->rb1->isChecked());
+            x->rb2->setChecked(!x->rb2->isChecked());
+        }
+}
+
+void MainWindow::QuickHull(vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res)
+{
+    if(set.empty())
+        return;
+
+    auto len = [](QPointF A, QPointF B, QPointF C)
+    {
+        double a = B.y() - A.y();
+        double b = A.x() - B.x();
+        return fabs((a*C.x() + b*C.y() + a*A.x() + b*B.x())) / sqrt(a*a + b*b);
+    };
+
+    auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
+    {
+        return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
+    };
+
+    double l = 0;
+
+    QPointF max;
+    for(auto point:set)
+    {
+        if(l < len(pMin,pMax,point))
+            l = len(pMin,pMax,point), max = point;
+    }
+
+    //Max - найдальша точка
+
+    //Сортування туди-сюди
+    vector<QPointF> upper, lower;
+    for(auto point:set)
+    {
+        if(point == pMax || point == pMin)
+            continue;
+        if(ccw(pMin,point,max)>0)
+            upper.push_back(point);
+        if(ccw(max,point,pMin)>0)
+            lower.push_back(point);
+    }
+
+    QuickHull(upper,pMin,max,res);
+    res.push_back(max);
+    QuickHull(lower,max,pMax,res);
+
+}
+
+void MainWindow::on_actionLoad_triggered()
+{
+    filename = QFileDialog::getOpenFileName(this,"Відкрити","","MMДО/МС файли (*.fuf)");
+
+    QFile file(filename);
+    if(file.open(QIODevice::ReadOnly))
+    {
+
+        QTextStream stream(&file);
+
+        int equals, vars;
+
+        stream >> equals >> vars;
+
+        this->equals = equals;
+        this->values = vars;
+
+        on_Equals_valueChanged(equals);
+        //    on_Variables_editingFinished();
+
+        double tmpD;
+        int tmpI;
+
+        for(int i=0; i<equals; i++)
+        {
+            for(int j=0; j<vars; j++)
+            {
+                stream >> tmpD;
+                l[i]->spBox[j]->setValue(tmpD);
+            }
+
+            stream >> tmpI;
+            tmpI ? l[i]->rb1->setChecked(true) : l[i]->rb2->setChecked(true);
+
+            stream >> tmpD;
+            l[i]->spBox[vars]->setValue(tmpD);
+
+            stream >> tmpI;
+            int r,g,b;
+            stream >> r >> g >> b;
+            QColor color(r,g,b);
+
+            l[i]->setColor(QColor(r,g,b));
+        }
+
+        //    for(int i=0; i<vars; i++)
+        //    {}
+
+        stream >> tmpI;
+        ui->spinBox_2->setValue(tmpI);
+
+        stream >> tmpI;
+        ui->spinBox->setValue(tmpI);
+
+        stream >> tmpI;
+        tmpI ? ui->radioButton_11->setChecked(true) : ui->radioButton_12->setChecked(true);
+
+        stream >> tmpI;
+        if(tmpI)
+        {
+            stream >> tmpI;
+            ui->spinBox_3->setValue(tmpI);
+
+            stream >> tmpI;
+            ui->spinBox_4->setValue(tmpI);
+        }
+
+        file.close();
+
+        on_actionCalculate_area_triggered();
+    }
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    if(filename.isEmpty())
+        filename = QFileDialog::getSaveFileName(this,"Зберегти","","MMДО/МС файли (*.fuf)");
+
+    QFile file(filename);
+
+    if(file.open(QIODevice::WriteOnly))
+    {
+
+        QTextStream stream(&file);
+
+        stream << equals << " " << values << endl;
+
+
+        for(int i=0; i<equals; i++)
+        {
+            for(int j=0; j<values; j++)
+                stream << l[i]->spBox[j]->value() << " ";
+
+            stream << l[i]->rb1->isChecked() << " ";
+            stream << l[i]->spBox[values]->value() << " ";
+
+            stream << "1 ";
+            int r,g,b;
+
+            l[i]->getColor().getRgb(&r,&g,&b,nullptr);
+            stream << r << " " << g << " " << b << endl;
+        }
+
+        stream << ui->spinBox_2->value() << " " << ui->spinBox->value() << " ";
+        stream << ui->radioButton_11->isChecked();
+
+    }
+}
+
+void MainWindow::on_checkBoxGradient_clicked()
+{
+    on_pushButton_5_clicked(); // не краще ніж попереднє, але буде фікситися
+}
+
 /*
 void MainWindow::on_FractLinear_clicked()
 {
@@ -545,186 +886,7 @@ void MainWindow::on_FractLinear_clicked()
     txtEdit->show();
 
 }
-*/
-void MainWindow::FracSpinBox()
-{
-    ui->spinBox_3->setVisible(ui->checkBox->isChecked());
-    ui->spinBox_4->setVisible(ui->checkBox->isChecked());
 
-}
-
-QString MainWindow::formOutput(vector<vector<double> > &matrix, vector<double> &multi, vector<double> &value, vector<double> &simplex)
-{
-    QString s = "";
-    s += QString("\t");
-    for(unsigned i = 0; i < matrix[0].size() - 1; i++)
-    {
-        QString buf;
-        buf.sprintf(" X%d\t", i+1);
-        s += buf;
-    }
-    s += QString(" B\n");
-
-    s += QString("C\t");
-    for(unsigned i = 0; i < matrix[0].size() - 1; i++)
-    {
-        QString buf;
-        if(fabs(value[i]) > 100000)// треба буде подумати
-            buf.sprintf(" -M\t");
-        else
-            buf.sprintf(" %.2lf\t", value[i]);
-        s += buf;
-    }
-    s += "\n";
-
-    for(unsigned i = 0; i < matrix.size(); i++)
-    {
-        if(fabs(multi[i]) < 100000)
-            s += QString(" %1\t|").arg(multi[i]);
-        else
-            s += QString(multi[i] < 0 ? "-M\t|":" M\t|");
-        for(unsigned j = 0; j < matrix[0].size(); j++)
-        {
-            QString buf;
-            buf.sprintf("% .2lf", matrix[i][j]);
-            s+=buf;
-            if(j<matrix[0].size()-1)
-                s+="\t";
-
-        }
-        s += "\n";
-    }
-    s+="Simplex row:\n\t";
-    for(unsigned i = 0; i < matrix[0].size(); i++)
-    {
-
-        QString buf;
-        if(fabs(simplex[i]) < 100000)// треба буде подумати
-            buf.sprintf("% .2lf\t", simplex[i]);
-        else
-            buf.sprintf(simplex[i] < 0 ? "-M\t":" M\t");
-        s+=buf;
-    }
-
-    return s;
-}
-
-void MainWindow::on_Simplex_clicked()
-{
-
-    normalizeInput();
-
-    //створили матрцю
-    vector< vector<double> > matrix;
-    matrix.resize(equals);
-    for(int i = 0; i < equals; i++)
-        matrix[i].resize(values + equals,0);
-
-    // записали Х1 та Х2
-    for(int i = 0; i < equals; i++)
-        for(int j=0; j<values; j++)
-            matrix[i][j]=l[i]->spBox[j]->value();
-
-    // Записали додаткові змінні
-    for(int i = 0; i < matrix.size(); i++)
-        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
-
-    // записали штучні змінні
-    for(int i = 0; i < matrix.size(); i++)
-        if(l[i]->rb1->isChecked())
-        {
-            for(int j = 0; j < equals; j++)
-                matrix[j].resize(matrix[j].size() + 1);
-            matrix[i][matrix[0].size()-1] = 1;
-        }
-
-    // розширили для вільних членів 8==D
-    for(int i = 0; i < matrix.size(); i++)
-        matrix[i].resize(matrix[i].size() + 1);
-
-    // загнали вільні члени
-    for(int i = 0; i < matrix.size(); i++)
-        matrix[i][matrix[0].size()-1] = l[i]->spBox[values]->value();
-
-    /// Як виявилося, вектор В має містити тільки додатні значення
-    /// І, здається тепер це вилізло боком, треба розгрібати
-
-    // вивід для дебагу
-    for(unsigned i = 0; i < matrix.size(); i++)
-    {
-        for(unsigned j = 0; j < matrix[0].size(); j++)
-            cout << matrix[i][j] << ' ';
-        cout << endl;
-    }
-
-    vector<double> value;
-    for(unsigned i = 0; i < matrix[0].size(); i++)
-        value.push_back(0);
-
-    // заносимо в value M для штучних змінних
-    int j = 0;
-    for(int i = 0; i < matrix.size(); i++)
-    {
-        if(l[i]->rb1->isChecked())
-            value[2 + matrix.size() + j++] = -1000000000000;// 2(кількість норм змінних)
-        //        + кількість рівняннь(додаткові змінні) + кількість вже занесених М
-    }
-
-    /// Змінити
-    ///
-    value[0] = ui->spinBox_2->value();
-    value[1] = ui->spinBox->value();
-
-    cout << endl;
-    for(unsigned i = 0; i < value.size(); i++)
-        cout << value[i] << ' ';
-    cout << endl;
-
-
-    if(ui->radioButton_12->isChecked())
-    {
-        value[0] = - ui->spinBox_2->value();
-        value[1] = -ui->spinBox->value();
-    }
-
-    // Сформована матриця
-
-    double result;
-
-    QString stringResult = "";
-    int validatei, validatej = 0;
-    while(validatej != -1)
-    {
-
-        vector<double> simplex;
-        simplex.resize(matrix[0].size(),0);
-
-        vector<double> multi;
-        multi.resize(matrix.size(),0);
-
-        result = FormSimlexRow(matrix, value, simplex,multi);
-
-        stringResult += formOutput(matrix,multi,value,simplex);
-        stringResult +="\n\n\n";
-
-        validatej = ValidateSimplexRow(simplex);
-
-        if(validatej != -1)
-        {
-            validatei = MinimalGRZero(validatej, matrix);
-            if(validatei == -1)
-                printf("Не сумісна матриця");
-            MakeVector(validatei, validatej,matrix);
-        }
-    }
-
-
-
-    txtEdit->setPlainText(stringResult);
-    txtEdit->setMinimumSize((int)txtEdit->document()->size().width(),(int)txtEdit->document()->size().height());
-    txtEdit->show();
-}
-/*
 void MainWindow::on_IntLinear_clicked()
 {
     //створили матрцю
@@ -940,332 +1102,4 @@ void MainWindow::on_IntLinear_clicked()
     txtEdit->show();
 
 }
-
-void MainWindow::on_DualSimplex_clicked()
-{
-    //створили матрицю
-    vector< vector<double> > matrix;
-    matrix.resize(2);
-    for(int i = 0; i < 2; i++)
-        matrix[i].resize(equals);
-    //занесли значення
-    for(int i = 0; i < equals; i++)
-    {
-        matrix[0][i] = l[i]->spBox1->value();
-        matrix[1][i] = l[i]->spBox2->value();
-
-        if(l[i]->rb1->isChecked())
-        {
-            matrix[1][i] *= -1;
-            matrix[0][i] *= -1;
-        }
-    }
-    for(unsigned i = 0; i < matrix.size(); i++)
-        matrix[i].resize(4 + equals);
-    ///ЗМІНИТИ
-    /// ОБОВ'ЯЗКОВО
-
-    matrix[0][4] = -1;
-    matrix[1][4] = 0;
-
-    matrix[0][5] = 0;
-    matrix[1][5] = -1;
-
-    matrix[0][6] = 1;
-    matrix[1][6] = 0;
-
-    matrix[0][7] = 0;
-    matrix[1][7] = 1;
-
-    // розширили для вільних члені
-    for(unsigned i = 0; i < matrix.size(); i++)
-        matrix[i].resize(matrix[i].size() + 1);
-    // загнали вільні члени
-    matrix[0][matrix[0].size()-1] = ui->spinBox_2->value();
-    matrix[1][matrix[1].size()-1] = ui->spinBox->value();
-    // вивід для дебагу
-    for(unsigned i = 0; i < matrix.size(); i++)
-    {
-        for(unsigned j = 0; j < matrix[0].size(); j++)
-            cout << matrix[i][j] << ' ';
-        cout << endl;
-    }
-
-    vector<double> value;
-    for(unsigned i = 0; i < matrix[0].size(); i++)
-        value.push_back(0);
-    // заносимо ціни
-    for(int i = 0; i < equals; i++)
-    {
-        value[i] = -l[i]->spBox3->value();//двоїста шукає мінімум
-        if(l[i]->rb1->isChecked())
-            value[i] *= -1;
-    }
-    //    -2 -> кількість змінних(x)
-    for(unsigned i = matrix[0].size()-1 -2; i < matrix[0].size()-1; i++)
-        value[i]=-10000000;
-
-    for(unsigned i = 0;i < value.size(); i++)
-        cout<<value[i]<<' ';
-    cout<<endl;
-
-
-    QString stringResult = "";
-    double result;
-    int validatei, validatej = 0;
-    while(validatej != -1)
-    {
-        vector<double> simplex;
-        simplex.resize(matrix[0].size(),0);
-
-        vector<double> multi;
-        multi.resize(equals,0);
-
-        result = FormSimlexRow(matrix, value, simplex,multi);
-
-        stringResult += formOutput(matrix,multi,value,simplex);
-        stringResult +="\n\n\n";
-
-
-        validatej = ValidateSimplexRow(simplex);
-        if(validatej != -1)
-        {
-            validatei = MinimalGRZero(validatej, matrix);
-            if(validatei == -1)
-                printf("Не сумісна матриця");
-            MakeVector(validatei, validatej,matrix);
-        }
-    }
-
-    txtEdit->setPlainText(stringResult);
-    txtEdit->setMinimumSize((int)txtEdit->document()->size().width(),(int)txtEdit->document()->size().height());
-    txtEdit->show();
-
-}
 */
-void MainWindow::on_Clear_clicked()
-{
-    scene->clear();
-    scene->addLine(500, 0, -500, 0,QPen(QColor("blue")));
-    scene->addLine(0, -500, 0, 500,QPen(QColor("blue")));
-    ui->label_16->clear();
-
-}
-
-void MainWindow::on_Close_clicked()
-{
-    this->close();
-
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-
-    //    on_Clear_clicked();
-
-    //    ellipse el(-6,-9,2,4,1,1);
-    //    vector<equation*> equ;
-    //    equ.push_back(new equation(2,3,6));
-    //    equ.push_back(new equation(-1,-1,-7));
-    //    equ.push_back(new equation(-11,-5,-55));
-    //    equ.push_back(new equation(0,1,0));//y>=0
-    //    equ.push_back(new equation(1,0,0));//x>=0
-
-    //    plots plot(&equ, &el);
-
-    //    vector<point *> *maxMin = plot.getMaxMin();
-    //    point *min = maxMin->at(1), *max = maxMin->at(0);
-
-    //    double h = el.function(min);
-    //sad
-    //  0w   QLine *line = new QLine();
-
-    //    LINE mLine;
-    //    mLine.a=2;
-    //    mLine.b=3;
-    //    mLine.c=6;
-    //    build_line(mLine,line);
-    //    scene->addLine(line);
-
-    ////    QGraphicsEllipseItem item;
-    ////    item.setRect();
-
-    //    scene->addEllipse(item);
-
-}
-
-void MainWindow::normalizeInput()
-{
-    for(int i=0; i<equals; i++)
-    {
-        if(l[i]->spBox[values]->value()<0)
-        {
-            for(auto x:l[i]->spBox)
-                x->setValue(x->value() * -1);
-
-            l[i]->rb1->setChecked(!l[i]->rb1->isChecked());
-            l[i]->rb2->setChecked(!l[i]->rb2->isChecked());
-
-        }
-    }
-}
-
-void MainWindow::QuickHull(vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res)
-{
-    if(set.empty())
-        return;
-
-    auto len = [](QPointF A, QPointF B, QPointF C)
-    {
-        double a = B.y() - A.y();
-        double b = A.x() - B.x();
-        return fabs((a*C.x() + b*C.y() + a*A.x() + b*B.x())) / sqrt(a*a + b*b);
-    };
-
-    auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
-    {
-        return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
-    };
-
-    double l = 0;
-
-    QPointF max;
-    for(auto point:set)
-    {
-        if(l < len(pMin,pMax,point))
-            l = len(pMin,pMax,point), max = point;
-    }
-
-    //Max - найдальша точка
-
-    //Сортування туди-сюди
-    vector<QPointF> upper, lower;
-    for(auto point:set)
-    {
-        if(point == pMax || point == pMin)
-            continue;
-        if(ccw(pMin,point,max)>0)
-            upper.push_back(point);
-        if(ccw(max,point,pMin)>0)
-            lower.push_back(point);
-    }
-
-    QuickHull(upper,pMin,max,res);
-    res.push_back(max);
-    QuickHull(lower,max,pMax,res);
-
-}
-
-void MainWindow::on_actionLoad_triggered()
-{
-    filename = QFileDialog::getOpenFileName(this,"Відкрити","","MMДО/МС файли (*.fuf)");
-
-    QFile file(filename);
-    if(file.open(QIODevice::ReadOnly))
-    {
-
-        QTextStream stream(&file);
-
-        int equals, vars;
-
-        stream >> equals >> vars;
-
-        this->equals = equals;
-        this->values = vars;
-
-        on_Equals_valueChanged(equals);
-        //    on_Variables_editingFinished();
-
-        double tmpD;
-        int tmpI;
-
-        for(int i=0; i<equals; i++)
-        {
-            for(int j=0; j<vars; j++)
-            {
-                stream >> tmpD;
-                l[i]->spBox[j]->setValue(tmpD);
-            }
-
-            stream >> tmpI;
-            tmpI ? l[i]->rb1->setChecked(true) : l[i]->rb2->setChecked(true);
-
-            stream >> tmpD;
-            l[i]->spBox[vars]->setValue(tmpD);
-
-            stream >> tmpI;
-            int r,g,b;
-            stream >> r >> g >> b;
-            QColor color(r,g,b);
-
-            l[i]->setColor(QColor(r,g,b));
-        }
-
-        //    for(int i=0; i<vars; i++)
-        //    {}
-
-        stream >> tmpI;
-        ui->spinBox_2->setValue(tmpI);
-
-        stream >> tmpI;
-        ui->spinBox->setValue(tmpI);
-
-        stream >> tmpI;
-        tmpI ? ui->radioButton_11->setChecked(true) : ui->radioButton_12->setChecked(true);
-
-        stream >> tmpI;
-        if(tmpI)
-        {
-            stream >> tmpI;
-            ui->spinBox_3->setValue(tmpI);
-
-            stream >> tmpI;
-            ui->spinBox_4->setValue(tmpI);
-        }
-
-        file.close();
-
-        on_actionCalculate_area_triggered();
-    }
-}
-
-void MainWindow::on_actionSave_triggered()
-{
-    if(filename.isEmpty())
-        filename = QFileDialog::getSaveFileName(this,"Зберегти","","MMДО/МС файли (*.fuf)");
-
-    QFile file(filename);
-
-    if(file.open(QIODevice::WriteOnly))
-    {
-
-        QTextStream stream(&file);
-
-        stream << equals << " " << values << endl;
-
-
-        for(int i=0; i<equals; i++)
-        {
-            for(int j=0; j<values; j++)
-                stream << l[i]->spBox[j]->value() << " ";
-
-            stream << l[i]->rb1->isChecked() << " ";
-            stream << l[i]->spBox[values]->value() << " ";
-
-            stream << "1 ";
-            int r,g,b;
-
-            l[i]->getColor().getRgb(&r,&g,&b,nullptr);
-            stream << r << " " << g << " " << b << endl;
-        }
-
-        stream << ui->spinBox_2->value() << " " << ui->spinBox->value() << " ";
-        stream << ui->radioButton_11->isChecked();
-
-    }
-}
-
-void MainWindow::on_checkBoxGradient_clicked()
-{
-    on_pushButton_5_clicked(); // не краще ніж попереднє, але буде фікситися
-}
