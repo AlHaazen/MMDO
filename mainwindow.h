@@ -11,6 +11,7 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
+#include <set>
 
 #include <logic.h>
 #include <imba.h>
@@ -31,21 +32,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    typedef struct _line
-    {
-        double a,b,c;
-    }LINE;
-
-    LINE *getLines() const;
-    void setLines(LINE *value);
-
 private slots:
 
-    void build_line(LINE line, QLineF *lines);
-
     void on_pushButton_5_clicked();
-
-    void solve_matrix(LINE line1, LINE line2, QPointF *point);
 
     void on_actionAbout_2_triggered();
 
@@ -63,13 +52,7 @@ private slots:
 
     void on_Equals_valueChanged(int arg1);
 
-    bool checkPoint(QPointF point);
-
-    void on_Variables_editingFinished();
-
     void on_Clear_clicked();
-
-    void on_Close_clicked();
 
     void on_Simplex_clicked();
 
@@ -95,11 +78,6 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
 
-    LINE *lines;
-    LINE staticLines[2];
-
-    QLineF *qlines;
-    vector<QPointF> goodPoints;
     int equals = 9;         // 9 7
     int values = 2;
 

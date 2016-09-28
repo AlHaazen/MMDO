@@ -33,3 +33,9 @@ void View::wheelEvent(QWheelEvent *e)
 
 
 }
+
+void View::mouseMoveEvent(QMouseEvent *e)
+{
+    if(e->button())
+      ;
+}

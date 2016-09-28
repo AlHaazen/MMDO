@@ -81,7 +81,6 @@ public:
     QSpinBox *Equals;
     QSpinBox *Variables;
     QPushButton *Clear;
-    QPushButton *Close;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QMenu *menuImba_knopka;
@@ -339,13 +338,6 @@ public:
 
         verticalLayout_2->addWidget(Clear);
 
-        Close = new QPushButton(layoutWidget);
-        Close->setObjectName(QStringLiteral("Close"));
-        sizePolicy1.setHeightForWidth(Close->sizePolicy().hasHeightForWidth());
-        Close->setSizePolicy(sizePolicy1);
-
-        verticalLayout_2->addWidget(Close);
-
 
         horizontalLayout_13->addLayout(verticalLayout_2);
 
@@ -413,7 +405,6 @@ public:
         FractLinear->setText(QApplication::translate("MainWindow", "\320\224\321\200\320\276\320\261\320\276\320\262\320\276-\320\273\321\226\320\275\321\226\320\271\320\275\320\260", 0));
         DualSimplex->setText(QApplication::translate("MainWindow", "\320\224\320\262\320\276\321\227\321\201\321\202\320\260 \320\267\320\260\320\264\320\260\321\207\320\260", 0));
         Clear->setText(QApplication::translate("MainWindow", "Clear", 0));
-        Close->setText(QApplication::translate("MainWindow", "Close", 0));
         menuImba_knopka->setTitle(QApplication::translate("MainWindow", "\320\224\320\276\320\262\321\226\320\264\320\272\320\260", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\320\236\320\277\321\206\321\226\321\227", 0));
         menu_2->setTitle(QApplication::translate("MainWindow", "\320\244\320\260\320\271\320\273", 0));

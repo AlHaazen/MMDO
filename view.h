@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 #include <QWheelEvent>
+#include <QMouseEvent>
 #include <QObject>
 
 #include <iostream>
@@ -19,6 +20,7 @@ public:
     View(QWidget *parent);
     ~View();
     void wheelEvent(QWheelEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 
 };
 

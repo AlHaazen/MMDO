@@ -4,22 +4,12 @@
 #include <iostream>
 #include <vector>
 
-
 #define N 50.0
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
-    // Х>0 and Y>0
-    staticLines[0].a = 0;  staticLines[0].b = 1;  staticLines[0].c = 0;
-    staticLines[1].a = 1;  staticLines[1].b = 0;  staticLines[1].c = 0;
-
-    lines = new LINE[equals];
-    qlines = new QLineF[equals];
-
     ui->setupUi(this);
     scene = new QGraphicsScene;
     ui->graphicsView->setScene(scene);
@@ -48,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ///Вибачте за тимчасові незручності
     ui->IntLinear->setVisible(false);
     ui->FractLinear->setVisible(false);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -55,193 +47,141 @@ MainWindow::~MainWindow()
     delete scene;
     delete ui;
     delete txtEdit;
-    delete lines;
-    delete qlines;
-}
-
-void MainWindow::build_line(LINE line, QLineF *qline)
-{
-    double x1,y1;
-    double x2,y2;
-    double x,y;
-
-    if(line.a != 0 && line.b != 0)
-    {
-        //    x1
-        x = (line.c - line.b*N)/line.a;
-        if(x <= N && x >= -N)
-        {
-            x1 = x;
-            y1 = N;
-        }
-
-        x = (line.c + line.b*N)/line.a;
-        if(x <= N && x >= -N)
-        {
-            x1 = x;
-            y1 = -N;
-        }
-
-        y = (line.c - line.a*N)/line.b;
-        if(y <= N && y >= -N)
-        {
-            x1 = N;
-            y1 = y;
-        }
-
-        y = (line.c + line.a*N)/line.b;
-        if(y <= N && y >= -N)
-        {
-            x1 = -N;
-            y1 = y;
-        }
-        //    x2
-        x = (line.c - line.b*N)/line.a;
-        if(x <= N && x >= -N && x != x1)
-        {
-            x2 = x;
-            y2 = N;
-        }
-
-        x = (line.c + line.b*N)/line.a;
-        if(x <= N && x >= -N && x != x1)
-        {
-            x2 = x;
-            y2 = -N;
-        }
-
-        y = (line.c + line.a*N)/line.b;
-        if(y <= N && y >= -N && y != y1)
-        {
-            x2 = -N;
-            y2 = y;
-        }
-
-        y = (line.c - line.a*N)/line.b;
-        if(y <= N && y >= -N && y != y1)
-        {
-            if(y != y1)
-                x2 = N;
-            y2 = y;
-        }
-
-        qline->setLine(x1*10, -y1*10, x2*10, -y2*10);
-    }
-    else
-    {
-        if(line.a == 0 && line.b != 0)
-            qline->setLine(-500, -10.0*line.c/line.b, 500, -10.0*line.c/line.b);
-        if(line.a != 0 && line.b == 0)
-            qline->setLine(10.0*line.c/line.a, 500, 10.0*line.c/line.a, -500);
-    }
 }
 
 void MainWindow::on_pushButton_5_clicked()//Calculate
 {
     on_Clear_clicked();
 
-    for(int i=0;i<equals;i++)
+    auto find = [] (vector<QPointF> vec, QPointF point)
     {
-        lines[i].a = l[i]->spBox[0]->value();
-        lines[i].b = l[i]->spBox[1]->value();
-        lines[i].c = l[i]->spBox[2]->value();
-        build_line(lines[i], &qlines[i]);
-        scene->addLine(qlines[i],QPen(l[i]->getColor()));
-    }
-
-    if(ui->checkBoxGradient->isChecked())
+        for(auto x:vec)
+            if(x == point)
+                return true;
+        return false;
+    };
+    auto checkPoint = [](QPointF point, vector<imbaLayout*> l)
     {
-        double k = ui->spinBox_2->value() > ui->spinBox->value() ? ui->spinBox_2->value()/N : ui->spinBox->value()/N;
-        scene->addLine(0,0,ui->spinBox_2->value()/k*10, -ui->spinBox->value()/k*10, QPen(Qt::gray));
-    }
+        if(point.x()<0 && point.y()<0)
+            return false;
 
+        double e = -0.005;
+        for(auto x:l)
+        {
+            double left = point.x()* x->spBox[0]->value()   +  point.y()* x->spBox[1]->value();
+            double right = x->spBox[2]->value();
+            if( left <=e+right && x->rb1->isChecked() || left >=right-e && x->rb2->isChecked())
+                return false;
+        }
+        return true;
+    };
 
     vector <QPointF> points;
+    vector<QLineF> lines;
+    vector<QPointF> goodPoints;
+
+    lines.push_back(QLineF(QPointF(-10000,0),QPointF(10000,0)));
+    lines.push_back(QLineF(QPointF(0,-10000),QPointF(0,10000)));
     points.push_back(QPointF(0,0));
 
-    for(int i = 0; i < 2; i++)
-        for(int j = 0; j <equals; j++)
-        {
-            points.resize(points.size()+1);
-            solve_matrix(staticLines[i], lines[j],&points.at(points.size()-1));
-        }
+    for(auto x:l) //формування ліній та їх відмальовка
+    {
+        //ax + by = c
+        //by = c - ax
+        //y = c/b - a/b x
+        //k = c/b
+        //alpha = -atan(a/b)
 
-    for(int i = 0; i < equals; i++)
-        for(int j = i+1; j < equals; j++)
+        double k = x->spBox[2]->value()/x->spBox[1]->value();
+        double alpha = -atan(x->spBox[0]->value()/x->spBox[1]->value())*180.0/M_PI;
+
+        QLineF tmp;
+        if(x->spBox[1]->value() == 0)
         {
-            points.resize(points.size()+1);
-            solve_matrix(lines[i], lines[j],&points.at(points.size()-1));
+            tmp.setPoints(QPointF(10*x->spBox[2]->value(),0),QPointF(100,0));
+            tmp.setAngle(90);
         }
+        else
+        {
+            tmp.setPoints(QPointF(0,-10*k),QPointF(100,0));
+            tmp.setAngle(alpha);
+        }
+        tmp.setLength(1000);
+
+        QLineF tmp2;
+        tmp2.setP1(tmp.p2());
+        tmp2.setP2(QPointF(0,0));
+        tmp2.setAngle(tmp.angle());
+        tmp2.setLength(-2*1000);
+
+        lines.push_back(tmp2);
+        scene->addLine(tmp2,QPen(x->getColor()));
+    }
+
+
+    for(auto lineA:lines)   //пошук точок перетину
+        for(auto lineB:lines)
+            if(lineA!=lineB)
+            {
+                QPointF tmp;
+                QLineF::IntersectType intType = lineA.intersect(lineB,&tmp);
+                tmp.rx()/=10;
+                tmp.ry()/=-10;
+                if(intType != QLineF::NoIntersection)
+                    points.push_back(tmp);
+            }
+
 
     double max = -INFINITY;
     double min = INFINITY;
 
     double xMax = 0.0, yMax = 0.0, xMin = 0.0, yMin = 0.0;
 
-    for(auto point: points)
-    {
-        if(point.x() >=0 && point.y() >= 0)
+    for(auto point: points) // Пошук точок ОДЗ і відповідно пошук мінімума і максимума
+        if(checkPoint(point,l) && !find(goodPoints,point))
         {
-            if(!checkPoint(point))
-                continue;
-
             //точка попадирувала
             goodPoints.push_back(point);
 
             auto targetFunc = [this,point]()
-            {
-                return ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y();
-            };
+            {return ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y();};
 
             if(targetFunc() > max)
             {
                 max = targetFunc();
                 xMax = point.x(); yMax = point.y();
             }
-
             if(targetFunc() < min)
             {
                 min = targetFunc();
                 xMin = point.x(); yMin = point.y();
             }
-
         }
-    }
 
     QString LabelText;
     LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax)
             + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
-
     ui->label_16->setText(LabelText);
 
     sort(goodPoints);
-    QPainterPath path;
 
+    QPainterPath path;
     path.moveTo(goodPoints[0].x()*10,goodPoints[0].y()*-10);
 
     for(auto point:goodPoints)
     {
         point.setX(point.x()*10);
         point.setY(point.y()*-10);
-        //        scene->addLine(point.x(),point.y(),point.x(),point.y(),QPen(QColor("red")));
         path.lineTo(point);
     }
-    //path.lineTo(goodPoints[0]);
+
     scene->addPath(path,QPen(Qt::black),QBrush(Qt::DiagCrossPattern));
 
-    goodPoints.clear();
-
-    points.clear();
-}
-
-void MainWindow::solve_matrix(LINE line1, LINE line2, QPointF *point)
-{
-    double delta, dx, dy;
-    delta = line1.a*line2.b - line2.a*line1.b;
-    dx = line1.c*line2.b - line2.c*line1.b;
-    dy = line1.a*line2.c - line2.a*line1.c;
-    point->setX(dx/delta);
-    point->setY(dy/delta);
+    if(ui->checkBoxGradient->isChecked())
+    {
+        double k = ui->spinBox_2->value() > ui->spinBox->value() ? ui->spinBox_2->value()/N : ui->spinBox->value()/N;
+        scene->addLine(0,0,ui->spinBox_2->value()/k*10, -ui->spinBox->value()/k*10, QPen(Qt::gray));
+    }
 }
 
 void MainWindow::on_actionAbout_2_triggered()//про qt
@@ -277,18 +217,17 @@ void MainWindow::on_actionClose_triggered()//Close
     MainWindow::on_Clear_clicked();
 }
 
-void MainWindow::sort(vector<QPointF> &points) //сортування точок і вимальовування одз
+void MainWindow::sort(vector<QPointF> &points) //сортування точок
 {
 
     auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
-    {
-        return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
-    };
+    {return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());};
 
     vector<QPointF> res;
 
     double max = 0, min = 1e9;
     QPointF pMax,pMin;
+
     //Пошук лівої і правої
     for(auto point:points)
     {
@@ -309,10 +248,6 @@ void MainWindow::sort(vector<QPointF> &points) //сортування точок
         else
             lower.push_back(point);
     }
-
-
-    /*   std::function<void (vector<QPointF>, QPointF, QPointF)> */
-
 
     res.push_back(pMin);
     QuickHull(upper, pMin,pMax,res);
@@ -350,29 +285,6 @@ void MainWindow::on_Equals_valueChanged(int arg1)
     equals = ui->Equals->value();
 
     this->update();
-
-    delete lines;
-    delete qlines;
-    lines = new LINE[equals];
-    qlines = new QLineF[equals];
-
-}
-
-bool MainWindow::checkPoint(QPointF point)
-{
-    for(int i=0;i<ui->Equals->value();i++)
-    {
-        double left =point.x()* l[i]->spBox[0]->value()   +  point.y()* l[i]->spBox[1]->value();
-        double r = l[i]->spBox[2]->value();
-        if( left <r && l[i]->rb1->isChecked() || left >r && l[i]->rb2->isChecked())
-            return false;
-    }
-    return true;
-
-}
-
-void MainWindow::on_Variables_editingFinished()
-{
 
 }
 
@@ -422,7 +334,7 @@ void MainWindow::on_Simplex_clicked()
 
         if(x->rb1->isChecked())
             value[values + equals + j++] = -1000000000000;
-        //змінні + рівняння + вже занесениі М
+    //змінні + рівняння + вже занесениі М
 
     /// Змінити
     value[0] = ui->spinBox_2->value();
@@ -534,13 +446,6 @@ void MainWindow::on_Clear_clicked()
     scene->addLine(500, 0, -500, 0,QPen(QColor("blue")));
     scene->addLine(0, -500, 0, 500,QPen(QColor("blue")));
     ui->label_16->clear();
-
-}
-
-void MainWindow::on_Close_clicked()
-{
-    this->close();
-
 }
 
 void MainWindow::normalizeInput()
