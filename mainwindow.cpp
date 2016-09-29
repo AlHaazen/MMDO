@@ -1,11 +1,6 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <iostream>
-#include <vector>
-
-#define N 50.0
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -38,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ///Вибачте за тимчасові незручності
     ui->IntLinear->setVisible(false);
     ui->FractLinear->setVisible(false);
-
 
 }
 
@@ -160,7 +154,7 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
 
     QString LabelText;
     LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax)
-            + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
+              + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
     ui->label_16->setText(LabelText);
 
     sort(goodPoints);
@@ -179,7 +173,8 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
 
     if(ui->checkBoxGradient->isChecked())
     {
-        double k = ui->spinBox_2->value() > ui->spinBox->value() ? ui->spinBox_2->value()/N : ui->spinBox->value()/N;
+        double k = ui->spinBox_2->value() > ui->spinBox->value() ? ui->spinBox_2->value()/100500.0
+                                                                 : ui->spinBox->value()/100500.0;
         scene->addLine(0,0,ui->spinBox_2->value()/k*10, -ui->spinBox->value()/k*10, QPen(Qt::gray));
     }
 }

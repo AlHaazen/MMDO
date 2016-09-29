@@ -9,12 +9,13 @@
 
 #include <vector>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <set>
 
 #include <logic.h>
 #include <imba.h>
+#include <targetlayout.h>
 #include <view.h>
 
 

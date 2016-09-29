@@ -21,6 +21,7 @@ SOURCES += main.cpp\
 #    equation.cpp \
 #    plots.cpp \
 #    point.cpp
+    targetlayout.cpp
 
 HEADERS  += mainwindow.h \
     logic.h \
@@ -30,6 +31,7 @@ HEADERS  += mainwindow.h \
 #    equation.h \
 #    plots.h \
 #    point.h
+    targetlayout.h
 
 FORMS    += mainwindow.ui
 CONFIG += c++11
