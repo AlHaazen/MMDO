@@ -6,9 +6,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     scene = new QGraphicsScene;
+    TargetLayout = new targetLayout;
+    txtEdit = new QPlainTextEdit();
+
     ui->graphicsView->setScene(scene);
+
     ui->centralWidget->setLayout(ui->horizontalLayout);
+
+    ui->verticalLayout->insertLayout(0,TargetLayout);
 
     ui->Equals->setValue(9);
 
@@ -19,21 +26,12 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
         ui->verticalLayout->insertLayout(1+i,l[i]);
     }
-
-    txtEdit = new QPlainTextEdit();
-
-    ui->spinBox_3->setVisible(false);
-    ui->spinBox_4->setVisible(false);
-
-    connect(ui->checkBox,SIGNAL(stateChanged(int)),SLOT(FracSpinBox()));
-
     on_Clear_clicked();
 
     ///цілочислова і дробовочислова не працюють
     ///Вибачте за тимчасові незручності
     ui->IntLinear->setVisible(false);
     ui->FractLinear->setVisible(false);
-
 }
 
 MainWindow::~MainWindow()
@@ -138,7 +136,7 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
             goodPoints.push_back(point);
 
             auto targetFunc = [this,point]()
-            {return ui->spinBox_2->value()*point.x() + ui->spinBox->value()*point.y();};
+            {return this->TargetLayout->getX()[0]*point.x() + this->TargetLayout->getX()[1]*point.y();};
 
             if(targetFunc() > max)
             {
@@ -154,7 +152,7 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
 
     QString LabelText;
     LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax)
-              + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
+            + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
     ui->label_16->setText(LabelText);
 
     sort(goodPoints);
@@ -173,9 +171,9 @@ void MainWindow::on_pushButton_5_clicked()//Calculate
 
     if(ui->checkBoxGradient->isChecked())
     {
-        double k = ui->spinBox_2->value() > ui->spinBox->value() ? ui->spinBox_2->value()/100500.0
-                                                                 : ui->spinBox->value()/100500.0;
-        scene->addLine(0,0,ui->spinBox_2->value()/k*10, -ui->spinBox->value()/k*10, QPen(Qt::gray));
+        double k = TargetLayout->getX()[0] > TargetLayout->getX()[1] ? TargetLayout->getX()[0]/100500.0
+                : TargetLayout->getX()[1]/100500.0;
+        scene->addLine(0,0,TargetLayout->getX()[0]/k*10, -TargetLayout->getX()[1]/k*10, QPen(Qt::gray));
     }
 }
 
@@ -283,13 +281,6 @@ void MainWindow::on_Equals_valueChanged(int arg1)
 
 }
 
-void MainWindow::FracSpinBox()
-{
-    ui->spinBox_3->setVisible(ui->checkBox->isChecked());
-    ui->spinBox_4->setVisible(ui->checkBox->isChecked());
-
-}
-
 void MainWindow::on_Simplex_clicked()
 {
     normalizeInput();
@@ -321,7 +312,12 @@ void MainWindow::on_Simplex_clicked()
     for(int i = 0; i < matrix.size(); i++)
         matrix[i].push_back(l[i]->spBox[values]->value());
 
-    vector<double> value(matrix[0].size(),0);
+    vector<double> value = TargetLayout->getX();
+    if(!TargetLayout->findMax())
+        for(auto &x:value)
+            x *= -1;
+
+    value.resize(matrix[0].size(),0);
 
     // заносимо в value M для штучних змінних
     int j = 0;
@@ -329,17 +325,7 @@ void MainWindow::on_Simplex_clicked()
 
         if(x->rb1->isChecked())
             value[values + equals + j++] = -1000000000000;
-    //змінні + рівняння + вже занесениі М
-
-    /// Змінити
-    value[0] = ui->spinBox_2->value();
-    value[1] = ui->spinBox->value();
-
-    if(ui->radioButton_12->isChecked())
-    {
-        value[0] = - ui->spinBox_2->value();
-        value[1] = -ui->spinBox->value();
-    }
+    //змінні + рівняння + вже занесені М
 
     // вивід для дебагу
     for(unsigned i = 0; i < matrix.size(); i++)
@@ -375,7 +361,7 @@ void MainWindow::on_DualSimplex_clicked()
     for(int i=0; i<equals; i++)
         for(int j=0; j<values; j++)
         {
-            if(ui->radioButton_12->isChecked() && l[i]->rb1->isChecked())
+            if(!TargetLayout->findMax() && l[i]->rb1->isChecked())
                 matrix[j][i] = -l[i]->spBox[j]->value();
             else
                 matrix[j][i] = l[i]->spBox[j]->value();
@@ -398,8 +384,9 @@ void MainWindow::on_DualSimplex_clicked()
 
 
     // загнали вільні члени
-    matrix[0].push_back(ui->spinBox_2->value());
-    matrix[1].push_back(ui->spinBox->value());
+    vector<double> tmp = TargetLayout->getX();
+    for(int i=0;i<values;i++)
+        matrix[i].push_back(tmp[i]);
 
     vector<double> value(matrix[0].size(),0);
 
@@ -546,26 +533,23 @@ void MainWindow::on_actionLoad_triggered()
             l[i]->setColor(QColor(r,g,b));
         }
 
-        //    for(int i=0; i<vars; i++)
-        //    {}
+        vector<double> x(vars);
+        for(int i=0; i<vars; i++)
+            stream >> x[i];
+
+        TargetLayout->resize(vars);
+        TargetLayout->setX(x);
 
         stream >> tmpI;
-        ui->spinBox_2->setValue(tmpI);
-
-        stream >> tmpI;
-        ui->spinBox->setValue(tmpI);
-
-        stream >> tmpI;
-        tmpI ? ui->radioButton_11->setChecked(true) : ui->radioButton_12->setChecked(true);
+        TargetLayout->setTarget(tmpI);
 
         stream >> tmpI;
         if(tmpI)
         {
-            stream >> tmpI;
-            ui->spinBox_3->setValue(tmpI);
-
-            stream >> tmpI;
-            ui->spinBox_4->setValue(tmpI);
+            TargetLayout->setFrac(true);
+            for(int i=0; i<vars; i++)
+                stream >> x[i];
+            TargetLayout->setY(x);
         }
 
         file.close();
@@ -604,8 +588,20 @@ void MainWindow::on_actionSave_triggered()
             stream << r << " " << g << " " << b << endl;
         }
 
-        stream << ui->spinBox_2->value() << " " << ui->spinBox->value() << " ";
-        stream << ui->radioButton_11->isChecked();
+        vector<double> vec = TargetLayout->getX();
+
+        for(auto x:vec)
+            stream << x << " ";
+
+        stream << TargetLayout->isFrac();
+
+        if(TargetLayout->isFrac())
+        {
+            vec = TargetLayout->getY();
+
+            for(auto x:vec)
+                stream << x << " ";
+        }
 
     }
 }

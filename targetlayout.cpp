@@ -4,7 +4,6 @@ targetLayout::targetLayout()
 {
     checkBox = new QCheckBox("Дробова");
 
-    group = new QButtonGroup;
     rb1 = new QRadioButton("Mакс");
     rb2 = new QRadioButton("Mін");
 
@@ -15,9 +14,6 @@ targetLayout::targetLayout()
     ctrlLayout = new QVBoxLayout;
     ctrlLayout->addLayout(rbLayout);
     ctrlLayout->addWidget(checkBox);
-
-    group->addButton(rb1);
-    group->addButton(rb1);
 
     for(int i=0; i<n; i++)
     {
@@ -56,6 +52,8 @@ targetLayout::targetLayout()
         this->addLayout(x);
 
     this->addLayout(ctrlLayout);
+
+    connect(this->checkBox, &QCheckBox::stateChanged,this, &targetLayout::onFracChange);
 }
 
 targetLayout::~targetLayout()
@@ -64,8 +62,6 @@ targetLayout::~targetLayout()
 
     delete rb1;
     delete rb2;
-
-    delete group;
 
     delete rbLayout;
     delete ctrlLayout;
@@ -97,8 +93,8 @@ void targetLayout::resize(int n)
         }
     else
     {
-        label1[this->n]->setText(QString("x%1 +").arg(this->n));
-        label2[this->n]->setText(QString("y%1 +").arg(this->n));
+        label1[this->n-1]->setText(QString("x%1 +").arg(this->n));
+        label2[this->n-1]->setText(QString("y%1 +").arg(this->n));
 
         for(int i=0; i<n - this->n; i++)
         {
@@ -155,4 +151,55 @@ vector<double> targetLayout::getX()
     for(auto x:spBox1)
         res.push_back(x->value());
     return res;
+}
+
+int targetLayout::setX(vector<double> x)
+{
+    if(x.size()!=n)
+        return -1;
+
+    for(int i=0; i<n; i++)
+        spBox1[i]->setValue(x[i]);
+    return 0;
+}
+
+vector<double> targetLayout::getY()
+{
+    vector<double> res;
+    for(auto x:spBox2)
+        res.push_back(x->value());
+    return res;
+
+}
+
+int targetLayout::setY(vector<double> x)
+{
+    if(x.size()!=n)
+        return -1;
+
+    for(int i=0; i<n; i++)
+        spBox2[i]->setValue(x[i]);
+    return 0;
+}
+
+void targetLayout::setTarget(bool max)
+{
+    if(max)
+        rb1->setChecked(true),rb2->setChecked(false);
+    else
+        rb1->setChecked(false),rb2->setChecked(true);
+}
+
+void targetLayout::setFrac(bool x)
+{
+    checkBox->setChecked(x);
+}
+
+void targetLayout::onFracChange(int value)
+{
+    for(auto x:spBox2)
+        x->setVisible(value);
+    for(auto x:label2)
+        x->setVisible(value);
+
 }

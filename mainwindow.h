@@ -63,8 +63,6 @@ private slots:
 
     void on_FractLinear_clicked(){};
 
-    void FracSpinBox();
-
     void normalizeInput();
 
     void QuickHull (vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res);
@@ -85,6 +83,8 @@ private:
     vector<imbaLayout*> l;
     QPlainTextEdit *txtEdit;
     QString filename;
+
+    targetLayout *TargetLayout;
 
 };
 

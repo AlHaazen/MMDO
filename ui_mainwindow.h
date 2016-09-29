@@ -21,7 +21,6 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
@@ -47,23 +46,6 @@ public:
     QHBoxLayout *horizontalLayout;
     View *graphicsView;
     QVBoxLayout *verticalLayout;
-    QHBoxLayout *horizontalLayout_2;
-    QLabel *label;
-    QHBoxLayout *horizontalLayout_5;
-    QVBoxLayout *verticalLayout_3;
-    QSpinBox *spinBox_2;
-    QSpinBox *spinBox_3;
-    QLabel *label_2;
-    QVBoxLayout *verticalLayout_4;
-    QSpinBox *spinBox;
-    QSpinBox *spinBox_4;
-    QLabel *label_3;
-    QSpacerItem *horizontalSpacer_2;
-    QVBoxLayout *verticalLayout_5;
-    QHBoxLayout *horizontalLayout_6;
-    QRadioButton *radioButton_11;
-    QRadioButton *radioButton_12;
-    QCheckBox *checkBox;
     QSpacerItem *verticalSpacer_2;
     QLabel *label_16;
     QHBoxLayout *horizontalLayout_13;
@@ -129,118 +111,6 @@ public:
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(6);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        label = new QLabel(layoutWidget);
-        label->setObjectName(QStringLiteral("label"));
-        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
-        label->setSizePolicy(sizePolicy);
-
-        horizontalLayout_2->addWidget(label);
-
-        horizontalLayout_5 = new QHBoxLayout();
-        horizontalLayout_5->setSpacing(6);
-        horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
-        verticalLayout_3 = new QVBoxLayout();
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        spinBox_2 = new QSpinBox(layoutWidget);
-        spinBox_2->setObjectName(QStringLiteral("spinBox_2"));
-        spinBox_2->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        spinBox_2->setMinimum(-100);
-        spinBox_2->setMaximum(100);
-        spinBox_2->setValue(31);
-
-        verticalLayout_3->addWidget(spinBox_2);
-
-        spinBox_3 = new QSpinBox(layoutWidget);
-        spinBox_3->setObjectName(QStringLiteral("spinBox_3"));
-        spinBox_3->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        spinBox_3->setMinimum(-100);
-        spinBox_3->setSingleStep(1);
-
-        verticalLayout_3->addWidget(spinBox_3);
-
-
-        horizontalLayout_5->addLayout(verticalLayout_3);
-
-        label_2 = new QLabel(layoutWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        horizontalLayout_5->addWidget(label_2);
-
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        spinBox = new QSpinBox(layoutWidget);
-        spinBox->setObjectName(QStringLiteral("spinBox"));
-        spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        spinBox->setMinimum(-100);
-        spinBox->setMaximum(100);
-        spinBox->setValue(74);
-
-        verticalLayout_4->addWidget(spinBox);
-
-        spinBox_4 = new QSpinBox(layoutWidget);
-        spinBox_4->setObjectName(QStringLiteral("spinBox_4"));
-        spinBox_4->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        spinBox_4->setMinimum(-100);
-        spinBox_4->setSingleStep(1);
-
-        verticalLayout_4->addWidget(spinBox_4);
-
-
-        horizontalLayout_5->addLayout(verticalLayout_4);
-
-        label_3 = new QLabel(layoutWidget);
-        label_3->setObjectName(QStringLiteral("label_3"));
-
-        horizontalLayout_5->addWidget(label_3);
-
-        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_5->addItem(horizontalSpacer_2);
-
-        verticalLayout_5 = new QVBoxLayout();
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        horizontalLayout_6 = new QHBoxLayout();
-        horizontalLayout_6->setSpacing(6);
-        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
-        radioButton_11 = new QRadioButton(layoutWidget);
-        radioButton_11->setObjectName(QStringLiteral("radioButton_11"));
-        radioButton_11->setMaximumSize(QSize(50, 16777215));
-        radioButton_11->setChecked(true);
-
-        horizontalLayout_6->addWidget(radioButton_11);
-
-        radioButton_12 = new QRadioButton(layoutWidget);
-        radioButton_12->setObjectName(QStringLiteral("radioButton_12"));
-        radioButton_12->setChecked(false);
-
-        horizontalLayout_6->addWidget(radioButton_12);
-
-
-        verticalLayout_5->addLayout(horizontalLayout_6);
-
-        checkBox = new QCheckBox(layoutWidget);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-
-        verticalLayout_5->addWidget(checkBox);
-
-
-        horizontalLayout_5->addLayout(verticalLayout_5);
-
-
-        horizontalLayout_2->addLayout(horizontalLayout_5);
-
-
-        verticalLayout->addLayout(horizontalLayout_2);
-
         verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer_2);
@@ -279,18 +149,18 @@ public:
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         pushButton_5 = new QPushButton(layoutWidget);
         pushButton_5->setObjectName(QStringLiteral("pushButton_5"));
-        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
-        pushButton_5->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
+        pushButton_5->setSizePolicy(sizePolicy);
 
         verticalLayout_2->addWidget(pushButton_5);
 
         Simplex = new QPushButton(layoutWidget);
         Simplex->setObjectName(QStringLiteral("Simplex"));
-        sizePolicy1.setHeightForWidth(Simplex->sizePolicy().hasHeightForWidth());
-        Simplex->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(Simplex->sizePolicy().hasHeightForWidth());
+        Simplex->setSizePolicy(sizePolicy);
 
         verticalLayout_2->addWidget(Simplex);
 
@@ -333,8 +203,8 @@ public:
 
         Clear = new QPushButton(layoutWidget);
         Clear->setObjectName(QStringLiteral("Clear"));
-        sizePolicy1.setHeightForWidth(Clear->sizePolicy().hasHeightForWidth());
-        Clear->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(Clear->sizePolicy().hasHeightForWidth());
+        Clear->setSizePolicy(sizePolicy);
 
         verticalLayout_2->addWidget(Clear);
 
@@ -391,12 +261,6 @@ public:
         actionClose->setText(QApplication::translate("MainWindow", "Cl&ose", 0));
         actionLoad->setText(QApplication::translate("MainWindow", "\320\222\321\226\320\264\320\272\321\200\320\270\321\202\320\270", 0));
         actionSave->setText(QApplication::translate("MainWindow", "\320\227\320\261\320\265\321\200\320\265\320\263\321\202\320\270", 0));
-        label->setText(QApplication::translate("MainWindow", "F(x1;x2)=", 0));
-        label_2->setText(QApplication::translate("MainWindow", "x1 +", 0));
-        label_3->setText(QApplication::translate("MainWindow", "x2 ->", 0));
-        radioButton_11->setText(QApplication::translate("MainWindow", "&max", 0));
-        radioButton_12->setText(QApplication::translate("MainWindow", "mi&n", 0));
-        checkBox->setText(QApplication::translate("MainWindow", "\320\224\321\200\320\276\320\261\320\276\320\262\320\260", 0));
         label_16->setText(QString());
         checkBoxGradient->setText(QApplication::translate("MainWindow", "\320\223\321\200\320\260\320\264\321\226\321\224\320\275\321\202", 0));
         pushButton_5->setText(QApplication::translate("MainWindow", "\320\240\320\276\320\267\321\200\320\260\321\205\321\203\320\262\320\260\321\202\320\270", 0));

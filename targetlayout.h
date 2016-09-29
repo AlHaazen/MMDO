@@ -23,8 +23,43 @@ public:
 
     bool findMax();
     bool isFrac();
+    /*!
+     * \brief Вертає коефіцієнти при Х
+     * \return
+     */
     vector<double> getX();
-//    vector<double> getY();
+
+    /*!
+     * \brief Виставляє коефіцієнти при Х
+     * \param X
+     * \return -1 якщо щось не так, 1 якщо все ок
+     */
+    int setX(vector<double> X);
+
+    /*!
+     * \brief Вертає коефіцієнти при У
+     * \return
+     */
+    vector<double> getY();
+
+    /*!
+     * \brief Виставляє коефіцієнти при У
+     * \param x
+     * \return -1 якщо щось не так, 1 якщо все ок
+     */
+    int setY(vector<double> x);
+
+    /*!
+     * \brief Виставляє макс/мін цільової функції. true = max, false = min
+     * \param max
+     */
+    void setTarget(bool max);
+
+    /*!
+     * \brief В залежності від параметра включає/виключає дробові коефи
+     * \param x
+     */
+    void setFrac(bool x);
 
 private:
     vector<QDoubleSpinBox*> spBox1, spBox2;
@@ -35,12 +70,14 @@ private:
 
     QCheckBox *checkBox;
     QRadioButton *rb1,*rb2;
-    QButtonGroup *group;
 
     QHBoxLayout *rbLayout;
     QVBoxLayout *ctrlLayout;
 
     int n=2;
+
+private slots:
+    void onFracChange(int x);
 
 };
 
