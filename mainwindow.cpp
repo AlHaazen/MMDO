@@ -46,8 +46,9 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
                 return true;
         return false;
     };
+
     auto checkPoint = [](QPointF point, vector<imbaLayout *> l) {
-        if (point.x() < 0 && point.y() < 0)
+        if (point.x() < 0 || point.y() < 0)
             return false;
 
         double e = -0.005;
@@ -135,6 +136,8 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
     LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax) + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
     ui->label_16->setText(LabelText);
 
+    sort(goodPoints);
+
     QPainterPath path;
     path.moveTo(goodPoints[0].x() * 10, goodPoints[0].y() * -10);
 
@@ -170,10 +173,12 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
                 tmp.setAngle(alpha);
             }
             tmp.setLength(1000);
-
             tmp.setPoints(tmp.p2(), tmp.p1());
-            tmp.setLength(2000);
-            lines.push_back(tmp);
+            if (x > 0) {
+                tmp.setLength(-1000);
+            } else {
+                tmp.setLength(2000);
+            }
             scene->addLine(tmp, QPen(Qt::red));
         }
     }
@@ -523,7 +528,7 @@ void MainWindow::on_actionLoad_triggered() {
 
         file.close();
 
-        on_actionCalculate_area_triggered();
+        //        on_actionCalculate_area_triggered();
     }
 }
 
