@@ -1,10 +1,8 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     scene = new QGraphicsScene;
@@ -15,16 +13,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->centralWidget->setLayout(ui->horizontalLayout);
 
-    ui->verticalLayout->insertLayout(0,TargetLayout);
+    ui->verticalLayout->insertLayout(0, TargetLayout);
 
     ui->Equals->setValue(9);
 
     l.resize(ui->Equals->value());
-    for(int i=0;i<ui->Equals->value();i++)
-    {
-        l[i] = new imbaLayout(i+1);
-        connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
-        ui->verticalLayout->insertLayout(1+i,l[i]);
+    for (int i = 0; i < ui->Equals->value(); i++) {
+        l[i] = new imbaLayout(i + 1);
+        connect(l[i], SIGNAL(colorChanged()), this, SLOT(on_pushButton_5_clicked()));
+        ui->verticalLayout->insertLayout(1 + i, l[i]);
     }
     on_Clear_clicked();
 
@@ -34,178 +31,184 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FractLinear->setVisible(false);
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete scene;
     delete ui;
     delete txtEdit;
 }
 
-void MainWindow::on_pushButton_5_clicked()//Calculate
+void MainWindow::on_pushButton_5_clicked() //Calculate
 {
     on_Clear_clicked();
-
-    auto find = [] (vector<QPointF> vec, QPointF point)
-    {
-        for(auto x:vec)
-            if(x == point)
+    auto find = [](vector<QPointF> vec, QPointF point) {
+        for (auto x : vec)
+            if ((fabs(point.x() - x.x()) <= 1e-3) && (fabs(point.y() - x.y()) <= 1e-3))
                 return true;
         return false;
     };
-    auto checkPoint = [](QPointF point, vector<imbaLayout*> l)
-    {
-        if(point.x()<0 && point.y()<0)
+    auto checkPoint = [](QPointF point, vector<imbaLayout *> l) {
+        if (point.x() < 0 && point.y() < 0)
             return false;
 
         double e = -0.005;
-        for(auto x:l)
-        {
-            double left = point.x()* x->spBox[0]->value()   +  point.y()* x->spBox[1]->value();
+        for (auto x : l) {
+            double left = point.x() * x->spBox[0]->value() + point.y() * x->spBox[1]->value();
             double right = x->spBox[2]->value();
-            if( left <=e+right && x->rb1->isChecked() || left >=right-e && x->rb2->isChecked())
+            if ((left <= e + right && x->rb1->isChecked()) || (left >= right - e && x->rb2->isChecked()))
                 return false;
         }
         return true;
     };
 
-    vector <QPointF> points;
+    vector<QPointF> points;
     vector<QLineF> lines;
     vector<QPointF> goodPoints;
 
-    lines.push_back(QLineF(QPointF(-10000,0),QPointF(10000,0)));
-    lines.push_back(QLineF(QPointF(0,-10000),QPointF(0,10000)));
-    points.push_back(QPointF(0,0));
+    lines.push_back(QLineF(QPointF(-10000, 0), QPointF(10000, 0)));
+    lines.push_back(QLineF(QPointF(0, -10000), QPointF(0, 10000)));
+    points.push_back(QPointF(0, 0));
 
-    for(auto x:l) //формування ліній та їх відмальовка
+    for (auto x : l) //формування ліній та їх відмальовка
     {
+        /*
         //ax + by = c
         //by = c - ax
         //y = c/b - a/b x
         //k = c/b
         //alpha = -atan(a/b)
-
-        double k = x->spBox[2]->value()/x->spBox[1]->value();
-        double alpha = -atan(x->spBox[0]->value()/x->spBox[1]->value())*180.0/M_PI;
+        */
+        double k = x->spBox[2]->value() / x->spBox[1]->value();
+        double alpha = -atan(x->spBox[0]->value() / x->spBox[1]->value()) * 180.0 / M_PI;
 
         QLineF tmp;
-        if(x->spBox[1]->value() == 0)
-        {
-            tmp.setPoints(QPointF(10*x->spBox[2]->value(),0),QPointF(100,0));
+        if (x->spBox[1]->value() == 0) {
+            tmp.setPoints(QPointF(10 * x->spBox[2]->value(), 0), QPointF(100, 0));
             tmp.setAngle(90);
-        }
-        else
-        {
-            tmp.setPoints(QPointF(0,-10*k),QPointF(100,0));
+        } else {
+            tmp.setPoints(QPointF(0, -10 * k), QPointF(100, 0));
             tmp.setAngle(alpha);
         }
         tmp.setLength(1000);
 
-        QLineF tmp2;
-        tmp2.setP1(tmp.p2());
-        tmp2.setP2(QPointF(0,0));
-        tmp2.setAngle(tmp.angle());
-        tmp2.setLength(-2*1000);
-
-        lines.push_back(tmp2);
-        scene->addLine(tmp2,QPen(x->getColor()));
+        tmp.setPoints(tmp.p2(), tmp.p1());
+        tmp.setLength(2000);
+        lines.push_back(tmp);
+        scene->addLine(tmp, QPen(x->getColor()));
     }
 
-
-    for(auto lineA:lines)   //пошук точок перетину
-        for(auto lineB:lines)
-            if(lineA!=lineB)
-            {
+    for (auto lineA : lines) //пошук точок перетину
+        for (auto lineB : lines)
+            if (lineA != lineB) {
                 QPointF tmp;
-                QLineF::IntersectType intType = lineA.intersect(lineB,&tmp);
-                tmp.rx()/=10;
-                tmp.ry()/=-10;
-                if(intType != QLineF::NoIntersection)
+                QLineF::IntersectType intType = lineA.intersect(lineB, &tmp);
+                tmp.rx() /= 10;
+                tmp.ry() /= -10;
+                if (intType != QLineF::NoIntersection)
                     points.push_back(tmp);
             }
-
 
     double max = -INFINITY;
     double min = INFINITY;
 
     double xMax = 0.0, yMax = 0.0, xMin = 0.0, yMin = 0.0;
 
-    for(auto point: points) // Пошук точок ОДЗ і відповідно пошук мінімума і максимума
-        if(checkPoint(point,l) && !find(goodPoints,point))
-        {
+    for (auto point : points) // Пошук точок ОДЗ і відповідно пошук мінімума і максимума
+        if (checkPoint(point, l) && !find(goodPoints, point)) {
             //точка попадирувала
             goodPoints.push_back(point);
 
-            auto targetFunc = [this,point]()
-            {return this->TargetLayout->getX()[0]*point.x() + this->TargetLayout->getX()[1]*point.y();};
+            auto targetFunc = [this, point]() { return this->TargetLayout->getX()[0] * point.x() + this->TargetLayout->getX()[1] * point.y(); };
 
-            if(targetFunc() > max)
-            {
+            if (targetFunc() > max) {
                 max = targetFunc();
-                xMax = point.x(); yMax = point.y();
+                xMax = point.x();
+                yMax = point.y();
             }
-            if(targetFunc() < min)
-            {
+            if (targetFunc() < min) {
                 min = targetFunc();
-                xMin = point.x(); yMin = point.y();
+                xMin = point.x();
+                yMin = point.y();
             }
         }
 
     QString LabelText;
-    LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax)
-            + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
+    LabelText = QString("Max = %1 in (%2, %3)\n").arg(max).arg(xMax).arg(yMax) + QString("Min = %1 in (%2, %3)").arg(min).arg(xMin).arg(yMin);
     ui->label_16->setText(LabelText);
 
-    sort(goodPoints);
-
     QPainterPath path;
-    path.moveTo(goodPoints[0].x()*10,goodPoints[0].y()*-10);
+    path.moveTo(goodPoints[0].x() * 10, goodPoints[0].y() * -10);
 
-    for(auto point:goodPoints)
-    {
-        point.setX(point.x()*10);
-        point.setY(point.y()*-10);
+    for (auto point : goodPoints) {
+        point.setX(point.x() * 10);
+        point.setY(point.y() * -10);
         path.lineTo(point);
     }
 
-    scene->addPath(path,QPen(Qt::black),QBrush(Qt::DiagCrossPattern));
+    scene->addPath(path, QPen(Qt::black), QBrush(Qt::DiagCrossPattern));
 
-    if(ui->checkBoxGradient->isChecked())
-    {
-        double k = TargetLayout->getX()[0] > TargetLayout->getX()[1] ? TargetLayout->getX()[0]/100500.0
-                : TargetLayout->getX()[1]/100500.0;
-        scene->addLine(0,0,TargetLayout->getX()[0]/k*10, -TargetLayout->getX()[1]/k*10, QPen(Qt::gray));
+    if (ui->checkBoxGradient->isChecked()) {
+        double k = TargetLayout->getX()[0] > TargetLayout->getX()[1] ? TargetLayout->getX()[0] / 100500.0
+                                                                     : TargetLayout->getX()[1] / 100500.0;
+        scene->addLine(0, 0, TargetLayout->getX()[0] / k * 10, -TargetLayout->getX()[1] / k * 10, QPen(Qt::gray));
+
+        double a = TargetLayout->getA();
+        double b = TargetLayout->getB();
+
+        vector<double> vec;
+        vec.push_back(min);
+        vec.push_back(max);
+        for (auto x : vec) {
+            k = x / b;
+            double alpha = -atan(a / b) * 180.0 / M_PI;
+
+            QLineF tmp;
+            if (b == 0) {
+                tmp.setPoints(QPointF(10 * x, 0), QPointF(100, 0));
+                tmp.setAngle(90);
+            } else {
+                tmp.setPoints(QPointF(0, -10 * k), QPointF(100, 0));
+                tmp.setAngle(alpha);
+            }
+            tmp.setLength(1000);
+
+            tmp.setPoints(tmp.p2(), tmp.p1());
+            tmp.setLength(2000);
+            lines.push_back(tmp);
+            scene->addLine(tmp, QPen(Qt::red));
+        }
     }
 }
 
-void MainWindow::on_actionAbout_2_triggered()//про qt
+void MainWindow::on_actionAbout_2_triggered() //про qt
 {
     qApp->aboutQt();
 }
 
-void MainWindow::on_action_2_triggered()//про мене
+void MainWindow::on_action_2_triggered() //про мене
 {
-    QMessageBox::about(this, tr("Про програму"),
-                       tr("Ультимативна програма для лабораторних робіт з ММДО та МС\n"
-                          "Автори:\n"
-                          "Волошин Іван та Стецик Юрій") );
+    QMessageBox::about(this,
+                       "Про програму",
+                       "Ультимативна програма для лабораторних робіт з ММДО та МС\n"
+                       "Автори:\n"
+                       "Волошин Іван та Стецик Юрій");
 }
 
-void MainWindow::on_actionBuild_triggered()//Build
-{
-    MainWindow::on_pushButton_5_clicked();
-}
-
-void MainWindow::on_actionCalculate_area_triggered()//Calculate
+void MainWindow::on_actionBuild_triggered() //Build
 {
     MainWindow::on_pushButton_5_clicked();
 }
 
-void MainWindow::on_actionClear_triggered()//Clear
+void MainWindow::on_actionCalculate_area_triggered() //Calculate
+{
+    MainWindow::on_pushButton_5_clicked();
+}
+
+void MainWindow::on_actionClear_triggered() //Clear
 {
     MainWindow::on_Clear_clicked();
 }
 
-void MainWindow::on_actionClose_triggered()//Close
+void MainWindow::on_actionClose_triggered() //Close
 {
     MainWindow::on_Clear_clicked();
 }
@@ -213,62 +216,52 @@ void MainWindow::on_actionClose_triggered()//Close
 void MainWindow::sort(vector<QPointF> &points) //сортування точок
 {
 
-    auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
-    {return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());};
+    auto ccw = [](QPointF p1, QPointF p2, QPointF p3) { return (p2.x() - p1.x()) * (p3.y() - p1.y()) - (p2.y() - p1.y()) * (p3.x() - p1.x()); };
 
     vector<QPointF> res;
 
     double max = 0, min = 1e9;
-    QPointF pMax,pMin;
+    QPointF pMax, pMin;
 
     //Пошук лівої і правої
-    for(auto point:points)
-    {
-        if(point.x() > max)
+    for (auto point : points) {
+        if (point.x() > max)
             pMax = point, max = point.x();
-        if(point.x() < min)
+        if (point.x() < min)
             pMin = point, min = point.x();
     }
 
     //Сортування туди-сюди
     vector<QPointF> upper, lower;
-    for(auto point:points)
-    {
-        if(point == pMax || point == pMin)
+    for (auto point : points) {
+        if (point == pMax || point == pMin)
             continue;
-        if(ccw(pMin,point,pMax)>=0)
+        if (ccw(pMin, point, pMax) >= 0)
             upper.push_back(point);
         else
             lower.push_back(point);
     }
 
     res.push_back(pMin);
-    QuickHull(upper, pMin,pMax,res);
+    QuickHull(upper, pMin, pMax, res);
     res.push_back(pMax);
-    QuickHull(lower,pMax,pMin,res);
+    QuickHull(lower, pMax, pMin, res);
 
     points = res;
-
 }
 
-void MainWindow::on_Equals_valueChanged(int arg1)
-{
+void MainWindow::on_Equals_valueChanged(int arg1) {
     ui->Equals->setValue(arg1);
 
-    if(ui->Equals->value() > equals)
-    {
+    if (ui->Equals->value() > equals) {
         l.resize(ui->Equals->value());
-        for(int i=equals; i< ui->Equals->value(); i++)
-        {
-            l[i] = new imbaLayout(i+1);
-            connect(l[i],SIGNAL(colorChanged()),this,SLOT(on_pushButton_5_clicked()));
-            ui->verticalLayout->insertLayout(1+i,l[i]);
+        for (int i = equals; i < ui->Equals->value(); i++) {
+            l[i] = new imbaLayout(i + 1);
+            connect(l[i], SIGNAL(colorChanged()), this, SLOT(on_pushButton_5_clicked()));
+            ui->verticalLayout->insertLayout(1 + i, l[i]);
         }
-    }
-    else
-    {
-        for(int i=equals-1; i>=ui->Equals->value();i--)
-        {
+    } else {
+        for (int i = equals - 1; i >= ui->Equals->value(); i--) {
             ui->verticalLayout->removeItem(l[i]);
             delete l[i];
             l.pop_back();
@@ -278,90 +271,84 @@ void MainWindow::on_Equals_valueChanged(int arg1)
     equals = ui->Equals->value();
 
     this->update();
-
 }
 
-void MainWindow::on_Simplex_clicked()
-{
+void MainWindow::on_Simplex_clicked() {
     normalizeInput();
 
     //створили матрцю
-    vector<vector<double> > matrix(equals);
-    for(auto &x:matrix)
-        x.resize(values + equals,0);
+    vector<vector<double>> matrix(equals);
+    for (auto &x : matrix)
+        x.resize(values + equals, 0);
 
     // записали Х1 та Х2
-    for(int i=0; i<equals; i++)
-        for(int j=0; j<values; j++)
-            matrix[i][j]=l[i]->spBox[j]->value();
+    for (int i = 0; i < equals; i++)
+        for (int j = 0; j < values; j++)
+            matrix[i][j] = l[i]->spBox[j]->value();
 
     // Записали додаткові змінні
-    for(int i = 0; i < matrix.size(); i++)
-        matrix[i][i+2] = (l[i]->rb1->isChecked() ? -1 : 1);
+    for (int i = 0; i < matrix.size(); i++)
+        matrix[i][i + 2] = (l[i]->rb1->isChecked() ? -1 : 1);
 
     // записали штучні змінні
-    for(int i = 0; i < matrix.size(); i++)
-        if(l[i]->rb1->isChecked())
-        {
-            for(auto &x: matrix)
+    for (int i = 0; i < matrix.size(); i++)
+        if (l[i]->rb1->isChecked()) {
+            for (auto &x : matrix)
                 x.push_back(0);
-            matrix[i][matrix[0].size()-1] = 1;
+            matrix[i][matrix[0].size() - 1] = 1;
         }
 
     // загнали вільні члени
-    for(int i = 0; i < matrix.size(); i++)
+    for (int i = 0; i < matrix.size(); i++)
         matrix[i].push_back(l[i]->spBox[values]->value());
 
     vector<double> value = TargetLayout->getX();
-    if(!TargetLayout->findMax())
-        for(auto &x:value)
+    if (!TargetLayout->findMax())
+        for (auto &x : value)
             x *= -1;
 
-    value.resize(matrix[0].size(),0);
+    value.resize(matrix[0].size(), 0);
 
     // заносимо в value M для штучних змінних
     int j = 0;
-    for(auto x:l)
+    for (auto x : l)
 
-        if(x->rb1->isChecked())
+        if (x->rb1->isChecked())
             value[values + equals + j++] = -1000000000000;
     //змінні + рівняння + вже занесені М
 
     // вивід для дебагу
-    for(unsigned i = 0; i < matrix.size(); i++)
-    {
-        for(unsigned j = 0; j < matrix[0].size(); j++)
+    for (unsigned i = 0; i < matrix.size(); i++) {
+        for (unsigned j = 0; j < matrix[0].size(); j++)
             cout << matrix[i][j] << ' ';
         cout << endl;
     }
     cout << endl;
-    for(unsigned i = 0; i < value.size(); i++)
+    for (unsigned i = 0; i < value.size(); i++)
         cout << value[i] << ' ';
     cout << endl;
 
-    QString res = Simplex(matrix,value);
+    QString res = Simplex(matrix, value);
 
-    if(res == "")
+    if (res == "")
         res = "Щось пішло не так";
 
     txtEdit->setPlainText(res);
     txtEdit->showMaximized();
 }
 
-void MainWindow::on_DualSimplex_clicked()
-{
+void MainWindow::on_DualSimplex_clicked() {
     normalizeInput();
 
     //створили матрицю
-    vector<vector<double> > matrix(values);
-    for(auto &x:matrix)
+    vector<vector<double>> matrix(values);
+    for (auto &x : matrix)
         x.resize(equals);
 
     //занесли значення
-    for(int i=0; i<equals; i++)
-        for(int j=0; j<values; j++)
-        {
-            if(!TargetLayout->findMax() && l[i]->rb1->isChecked())
+    for (int i = 0; i < equals; i++)
+        for (int j = 0; j < values; j++) {
+            if (!TargetLayout->findMax() && l[i]->rb1->isChecked())
                 matrix[j][i] = -l[i]->spBox[j]->value();
             else
                 matrix[j][i] = l[i]->spBox[j]->value();
@@ -375,146 +362,129 @@ void MainWindow::on_DualSimplex_clicked()
     //                matrix[i].push_back(-1);
     //            else matrix[i].push_back(0);
 
-
-    for(int i=0; i<values; i++)
-        for(int j=0; j<values; j++)
-            if(i==j)
+    for (int i = 0; i < values; i++)
+        for (int j = 0; j < values; j++)
+            if (i == j)
                 matrix[i].push_back(1);
-            else matrix[i].push_back(0);
-
+            else
+                matrix[i].push_back(0);
 
     // загнали вільні члени
     vector<double> tmp = TargetLayout->getX();
-    for(int i=0;i<values;i++)
+    for (int i = 0; i < values; i++)
         matrix[i].push_back(tmp[i]);
 
-    vector<double> value(matrix[0].size(),0);
+    vector<double> value(matrix[0].size(), 0);
 
     // заносимо ціни
-    for(int i=0; i<equals; i++)
-    {
+    for (int i = 0; i < equals; i++) {
         value[i] = -l[i]->spBox[values]->value();
-        if(l[i]->rb1->isChecked())
+        if (l[i]->rb1->isChecked())
             value[i] *= -1;
     }
 
-    for(unsigned i = matrix[0].size()-1 - values; i < matrix[0].size()-1; i++)
-        value[i]=-10000000;
+    for (unsigned i = matrix[0].size() - 1 - values; i < matrix[0].size() - 1; i++)
+        value[i] = -10000000;
 
     // вивід для дебагу
-    for(unsigned i = 0; i < matrix.size(); i++)
-    {
-        for(unsigned j = 0; j < matrix[0].size(); j++)
+    for (unsigned i = 0; i < matrix.size(); i++) {
+        for (unsigned j = 0; j < matrix[0].size(); j++)
             cout << matrix[i][j] << '\t';
         cout << endl;
     }
-    for(unsigned i = 0;i < value.size(); i++)
-        cout<<value[i]<<' ';
-    cout<<endl;
+    for (unsigned i = 0; i < value.size(); i++)
+        cout << value[i] << ' ';
+    cout << endl;
 
-    QString res = Simplex(matrix,value);
+    QString res = Simplex(matrix, value);
 
-    if(res == "")
+    if (res == "")
         res = "Щось пішло не так";
 
     txtEdit->setPlainText(res);
     txtEdit->showMaximized();
-
 }
 
-void MainWindow::on_Clear_clicked()
-{
+void MainWindow::on_Clear_clicked() {
     scene->clear();
-    scene->addLine(500, 0, -500, 0,QPen(QColor("blue")));
-    scene->addLine(0, -500, 0, 500,QPen(QColor("blue")));
+    scene->addLine(500, 0, -500, 0, QPen(QColor("blue")));
+    scene->addLine(0, -500, 0, 500, QPen(QColor("blue")));
     ui->label_16->clear();
 }
 
-void MainWindow::normalizeInput()
-{
-    for(auto x:l)
-        if(x->spBox[values]->value() < 0)
-        {
-            for(auto y:x->spBox)
+void MainWindow::normalizeInput() {
+    for (auto x : l)
+        if (x->spBox[values]->value() < 0) {
+            for (auto y : x->spBox)
                 y->setValue(y->value() * -1);
             x->rb1->setChecked(!x->rb1->isChecked());
             x->rb2->setChecked(!x->rb2->isChecked());
         }
 }
 
-void MainWindow::QuickHull(vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res)
-{
-    if(set.empty())
+void MainWindow::QuickHull(vector<QPointF> set, QPointF pMin, QPointF pMax, vector<QPointF> &res) {
+    if (set.empty())
         return;
 
-    auto len = [](QPointF A, QPointF B, QPointF C)
-    {
+    auto len = [](QPointF A, QPointF B, QPointF C) {
         double a = B.y() - A.y();
         double b = A.x() - B.x();
-        return fabs((a*C.x() + b*C.y() + a*A.x() + b*B.x())) / sqrt(a*a + b*b);
+        return fabs((a * C.x() + b * C.y() + a * A.x() + b * B.x())) / sqrt(a * a + b * b);
     };
 
-    auto ccw = [](QPointF p1, QPointF p2, QPointF p3)
-    {
-        return (p2.x() - p1.x())*(p3.y() - p1.y()) - (p2.y() - p1.y())*(p3.x() - p1.x());
+    auto ccw = [](QPointF p1, QPointF p2, QPointF p3) {
+        return (p2.x() - p1.x()) * (p3.y() - p1.y()) - (p2.y() - p1.y()) * (p3.x() - p1.x());
     };
 
     double l = 0;
 
     QPointF max;
-    for(auto point:set)
-    {
-        if(l < len(pMin,pMax,point))
-            l = len(pMin,pMax,point), max = point;
+    for (auto point : set) {
+        if (l < len(pMin, pMax, point))
+            l = len(pMin, pMax, point), max = point;
     }
 
     //Max - найдальша точка
 
     //Сортування туди-сюди
     vector<QPointF> upper, lower;
-    for(auto point:set)
-    {
-        if(point == pMax || point == pMin)
+    for (auto point : set) {
+        if (point == pMax || point == pMin)
             continue;
-        if(ccw(pMin,point,max)>0)
+        if (ccw(pMin, point, max) > 0)
             upper.push_back(point);
-        if(ccw(max,point,pMin)>0)
+        if (ccw(max, point, pMin) > 0)
             lower.push_back(point);
     }
 
-    QuickHull(upper,pMin,max,res);
+    QuickHull(upper, pMin, max, res);
     res.push_back(max);
-    QuickHull(lower,max,pMax,res);
-
+    QuickHull(lower, max, pMax, res);
 }
 
-void MainWindow::on_actionLoad_triggered()
-{
-    filename = QFileDialog::getOpenFileName(this,"Відкрити","","MMДО/МС файли (*.fuf)");
+void MainWindow::on_actionLoad_triggered() {
+    filename = QFileDialog::getOpenFileName(this, "Відкрити", "", "MMДО/МС файли (*.fuf)");
 
     QFile file(filename);
-    if(file.open(QIODevice::ReadOnly))
-    {
+    if (file.open(QIODevice::ReadOnly)) {
 
         QTextStream stream(&file);
 
         int equals, vars;
 
         stream >> equals >> vars;
+        on_Equals_valueChanged(equals);
 
         this->equals = equals;
         this->values = vars;
 
-        on_Equals_valueChanged(equals);
         //    on_Variables_editingFinished();
 
         double tmpD;
         int tmpI;
 
-        for(int i=0; i<equals; i++)
-        {
-            for(int j=0; j<vars; j++)
-            {
+        for (int i = 0; i < equals; i++) {
+            for (int j = 0; j < vars; j++) {
                 stream >> tmpD;
                 l[i]->spBox[j]->setValue(tmpD);
             }
@@ -526,15 +496,15 @@ void MainWindow::on_actionLoad_triggered()
             l[i]->spBox[vars]->setValue(tmpD);
 
             stream >> tmpI;
-            int r,g,b;
+            int r, g, b;
             stream >> r >> g >> b;
-            QColor color(r,g,b);
+            QColor color(r, g, b);
 
-            l[i]->setColor(QColor(r,g,b));
+            l[i]->setColor(QColor(r, g, b));
         }
 
         vector<double> x(vars);
-        for(int i=0; i<vars; i++)
+        for (int i = 0; i < vars; i++)
             stream >> x[i];
 
         TargetLayout->resize(vars);
@@ -544,10 +514,9 @@ void MainWindow::on_actionLoad_triggered()
         TargetLayout->setTarget(tmpI);
 
         stream >> tmpI;
-        if(tmpI)
-        {
+        if (tmpI) {
             TargetLayout->setFrac(true);
-            for(int i=0; i<vars; i++)
+            for (int i = 0; i < vars; i++)
                 stream >> x[i];
             TargetLayout->setY(x);
         }
@@ -558,56 +527,49 @@ void MainWindow::on_actionLoad_triggered()
     }
 }
 
-void MainWindow::on_actionSave_triggered()
-{
-    if(filename.isEmpty())
-        filename = QFileDialog::getSaveFileName(this,"Зберегти","","MMДО/МС файли (*.fuf)");
+void MainWindow::on_actionSave_triggered() {
+    if (filename.isEmpty())
+        filename = QFileDialog::getSaveFileName(this, "Зберегти", "", "MMДО/МС файли (*.fuf)");
 
     QFile file(filename);
 
-    if(file.open(QIODevice::WriteOnly))
-    {
+    if (file.open(QIODevice::WriteOnly)) {
 
         QTextStream stream(&file);
 
         stream << equals << " " << values << endl;
 
-
-        for(int i=0; i<equals; i++)
-        {
-            for(int j=0; j<values; j++)
+        for (int i = 0; i < equals; i++) {
+            for (int j = 0; j < values; j++)
                 stream << l[i]->spBox[j]->value() << " ";
 
             stream << l[i]->rb1->isChecked() << " ";
             stream << l[i]->spBox[values]->value() << " ";
 
             stream << "1 ";
-            int r,g,b;
+            int r, g, b;
 
-            l[i]->getColor().getRgb(&r,&g,&b,nullptr);
+            l[i]->getColor().getRgb(&r, &g, &b, nullptr);
             stream << r << " " << g << " " << b << endl;
         }
 
         vector<double> vec = TargetLayout->getX();
 
-        for(auto x:vec)
+        for (auto x : vec)
             stream << x << " ";
 
         stream << TargetLayout->isFrac();
 
-        if(TargetLayout->isFrac())
-        {
+        if (TargetLayout->isFrac()) {
             vec = TargetLayout->getY();
 
-            for(auto x:vec)
+            for (auto x : vec)
                 stream << x << " ";
         }
-
     }
 }
 
-void MainWindow::on_checkBoxGradient_clicked()
-{
+void MainWindow::on_checkBoxGradient_clicked() {
     on_pushButton_5_clicked(); // не краще ніж попереднє, але буде фікситися
 }
 

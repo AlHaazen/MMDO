@@ -61,6 +61,12 @@ public:
      */
     void setFrac(bool x);
 
+    double getA();
+
+    double getB();
+
+    double getC();
+
 private:
     vector<QDoubleSpinBox*> spBox1, spBox2;
 
