@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          ui(new Ui::MainWindow) {
+    ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     scene = new QGraphicsScene;
@@ -150,8 +150,9 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
     scene->addPath(path, QPen(Qt::black), QBrush(Qt::DiagCrossPattern));
 
     if (ui->checkBoxGradient->isChecked()) {
+        //Gradient
         double k = TargetLayout->getX()[0] > TargetLayout->getX()[1] ? TargetLayout->getX()[0] / 100500.0
-                                                                     : TargetLayout->getX()[1] / 100500.0;
+                : TargetLayout->getX()[1] / 100500.0;
         scene->addLine(0, 0, TargetLayout->getX()[0] / k * 10, -TargetLayout->getX()[1] / k * 10, QPen(Qt::gray));
 
         double a = TargetLayout->getA();
@@ -160,20 +161,22 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
         vector<double> vec;
         vec.push_back(min);
         vec.push_back(max);
+        double level = ui->spinBoxLevel->value();
         for (auto x : vec) {
+            x = level;
             k = x / b;
-            double alpha = -atan(a / b) * 180.0 / M_PI;
 
             QLineF tmp;
             if (b == 0) {
                 tmp.setPoints(QPointF(10 * x, 0), QPointF(100, 0));
                 tmp.setAngle(90);
             } else {
+                double alpha = -atan(a / b) * 180.0 / M_PI;
                 tmp.setPoints(QPointF(0, -10 * k), QPointF(100, 0));
                 tmp.setAngle(alpha);
             }
             tmp.setLength(1000);
-            tmp.setPoints(tmp.p2(), tmp.p1());
+//            tmp.setPoints(tmp.p2(), tmp.p1());
             if (x > 0) {
                 tmp.setLength(-1000);
             } else {

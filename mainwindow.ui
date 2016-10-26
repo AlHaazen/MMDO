@@ -82,7 +82,20 @@
            <item>
             <widget class="QCheckBox" name="checkBoxGradient">
              <property name="text">
-              <string>Градієнт</string>
+              <string>Допоміжні лінії</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="spinBoxLevel">
+             <property name="minimum">
+              <double>-1999.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>11199.989999999999782</double>
+             </property>
+             <property name="value">
+              <double>98.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -209,7 +222,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuImba_knopka">

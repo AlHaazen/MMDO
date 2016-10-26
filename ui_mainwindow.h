@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.5.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -14,6 +14,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -52,6 +53,7 @@ public:
     QVBoxLayout *verticalLayout_6;
     QSpacerItem *verticalSpacer;
     QCheckBox *checkBoxGradient;
+    QDoubleSpinBox *spinBoxLevel;
     QSpacerItem *horizontalSpacer;
     QVBoxLayout *verticalLayout_2;
     QPushButton *pushButton_5;
@@ -136,6 +138,14 @@ public:
         checkBoxGradient->setObjectName(QStringLiteral("checkBoxGradient"));
 
         verticalLayout_6->addWidget(checkBoxGradient);
+
+        spinBoxLevel = new QDoubleSpinBox(layoutWidget);
+        spinBoxLevel->setObjectName(QStringLiteral("spinBoxLevel"));
+        spinBoxLevel->setMinimum(-1999);
+        spinBoxLevel->setMaximum(11200);
+        spinBoxLevel->setValue(98);
+
+        verticalLayout_6->addWidget(spinBoxLevel);
 
 
         horizontalLayout_13->addLayout(verticalLayout_6);
@@ -223,7 +233,7 @@ public:
         MainWindow->setStatusBar(statusBar);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 881, 19));
+        menuBar->setGeometry(QRect(0, 0, 881, 20));
         menuImba_knopka = new QMenu(menuBar);
         menuImba_knopka->setObjectName(QStringLiteral("menuImba_knopka"));
         menu = new QMenu(menuBar);
@@ -262,7 +272,7 @@ public:
         actionLoad->setText(QApplication::translate("MainWindow", "\320\222\321\226\320\264\320\272\321\200\320\270\321\202\320\270", 0));
         actionSave->setText(QApplication::translate("MainWindow", "\320\227\320\261\320\265\321\200\320\265\320\263\321\202\320\270", 0));
         label_16->setText(QString());
-        checkBoxGradient->setText(QApplication::translate("MainWindow", "\320\223\321\200\320\260\320\264\321\226\321\224\320\275\321\202", 0));
+        checkBoxGradient->setText(QApplication::translate("MainWindow", "\320\224\320\276\320\277\320\276\320\274\321\226\320\266\320\275\321\226 \320\273\321\226\320\275\321\226\321\227", 0));
         pushButton_5->setText(QApplication::translate("MainWindow", "\320\240\320\276\320\267\321\200\320\260\321\205\321\203\320\262\320\260\321\202\320\270", 0));
         Simplex->setText(QApplication::translate("MainWindow", "\320\241\320\270\320\274\320\273\320\265\320\272\321\201", 0));
         IntLinear->setText(QApplication::translate("MainWindow", "\320\246\321\226\320\273\320\276\321\207\320\270\321\201\320\273\320\276\320\262\320\260", 0));
