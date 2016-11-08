@@ -161,9 +161,7 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
         vector<double> vec;
         vec.push_back(min);
         vec.push_back(max);
-        double level = ui->spinBoxLevel->value();
         for (auto x : vec) {
-            x = level;
             k = x / b;
 
             QLineF tmp;
@@ -175,13 +173,10 @@ void MainWindow::on_pushButton_5_clicked() //Calculate
                 tmp.setPoints(QPointF(0, -10 * k), QPointF(100, 0));
                 tmp.setAngle(alpha);
             }
-            tmp.setLength(1000);
-//            tmp.setPoints(tmp.p2(), tmp.p1());
-            if (x > 0) {
-                tmp.setLength(-1000);
-            } else {
-                tmp.setLength(2000);
-            }
+            tmp.setLength(100000);
+            tmp.setPoints(tmp.p2(), tmp.p1());
+            tmp.setLength(200000);
+
             scene->addLine(tmp, QPen(Qt::red));
         }
     }
